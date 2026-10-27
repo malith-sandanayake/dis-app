@@ -75,14 +75,8 @@
 
       <!-- Phone Chassis -->
       <div class="relative w-[340px] h-[690px] bg-neutral-950 rounded-[44px] p-3 shadow-2xl border-4 border-neutral-800 ring-1 ring-white/10 flex flex-col overflow-hidden">
-        <!-- Speaker / Camera Notch -->
-        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-neutral-900 rounded-full z-50 flex items-center justify-center">
-          <div class="w-2.5 h-2.5 rounded-full bg-neutral-800 mr-2"></div>
-          <div class="w-10 h-1 rounded-full bg-neutral-800"></div>
-        </div>
-
-        <!-- Inner Touch Display Area -->
-        <div class="relative w-full h-full bg-[#101116] text-white rounded-[34px] overflow-hidden flex flex-col pt-7 select-none">
+        <!-- Inner Touch Display Area (Modern Notchless Screen) -->
+        <div class="relative w-full h-full bg-[#101116] text-white rounded-[34px] overflow-hidden flex flex-col pt-2 select-none">
           
           <!-- System Status Bar -->
           <div class="h-6 px-5 flex items-center justify-between text-xs text-neutral-400 font-medium shrink-0">
@@ -163,9 +157,14 @@
 
             <!-- Right Channels List -->
             <div class="flex-1 bg-[#12131a] flex flex-col">
-              <!-- Group Header -->
+              <!-- Group Header with Back Button to Auth / Account Switch -->
               <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
-                <span class="font-bold text-xs tracking-wide text-neutral-100" id="server-title">Apex Squad</span>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Back to Auth / Switch Account">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                  </button>
+                  <span class="font-bold text-xs tracking-wide text-neutral-100" id="server-title">Apex Squad</span>
+                </div>
                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700">Code: 8492</span>
               </div>
 
@@ -243,11 +242,11 @@
 
           <!-- SCREEN: TEXT CHAT -->
           <div id="screen-chat" class="screen-panel flex-1 flex flex-col bg-[#12131a]">
-            <!-- Header with Quick Join Call -->
+            <!-- Header with Quick Join Call & Functional Back -->
             <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between bg-[#0e0f14]">
-              <div class="flex items-center gap-2">
-                <button onclick="navigateTo('channels')" class="text-neutral-400 hover:text-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              <div class="flex items-center gap-1.5">
+                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Back to Channels">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 <span class="text-neutral-400 font-bold text-xs">#</span>
                 <span class="font-bold text-xs text-white">match-tactics</span>
@@ -319,17 +318,22 @@
 
           <!-- SCREEN: VOICE ROOM -->
           <div id="screen-voice" class="screen-panel hidden flex-1 flex flex-col bg-[#0b0c10]">
-            <!-- Voice Room Header -->
+            <!-- Voice Room Header with Functional Minimize & Back -->
             <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
-              <div>
-                <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Ranked Room A</span>
+              <div class="flex items-center gap-2">
+                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Minimize Call / Back">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div>
+                  <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Ranked Room A</span>
+                  </div>
+                  <div class="text-[10px] text-neutral-400">Opus 24kbps • DTX Active • RT 18ms</div>
                 </div>
-                <div class="text-[10px] text-neutral-400">Opus 24kbps • DTX Active • RT 18ms</div>
               </div>
-              <button onclick="navigateTo('chat')" class="text-neutral-400 hover:text-white p-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded transition-colors" title="Close Sheet">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
 
@@ -386,7 +390,7 @@
                   <span id="label-btn-route" class="text-[9px] mt-0.5 text-cyan-400">BT Audio</span>
                 </button>
                 <!-- Disconnect -->
-                <button onclick="navigateTo('channels')" class="w-11 h-11 rounded-xl bg-rose-600 hover:bg-rose-500 flex flex-col items-center justify-center text-white shadow-lg shadow-rose-600/30 transition-all">
+                <button onclick="leaveCall()" class="w-11 h-11 rounded-xl bg-rose-600 hover:bg-rose-500 flex flex-col items-center justify-center text-white shadow-lg shadow-rose-600/30 transition-all">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"/></svg>
                   <span class="text-[9px] mt-0.5">Leave</span>
                 </button>
@@ -409,9 +413,12 @@
               <div class="text-[11px] text-neutral-400 mt-1 max-w-[200px]">Game in foreground. Audio focus shared concurrently.</div>
             </div>
 
-            <!-- Android Persistent Notification Banner (Foreground Service) -->
+            <!-- Android Persistent Notification Banner (Foreground Service) with Back CTA -->
             <div class="relative z-10 m-2 p-2 rounded-xl bg-neutral-900/90 backdrop-blur border border-neutral-700 text-white shadow-xl flex items-center justify-between">
               <div class="flex items-center gap-2">
+                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded -ml-1 transition-colors" title="Back to GameVoice Call">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <div>
                   <div class="text-[11px] font-semibold leading-tight">GameVoice Call Active</div>
@@ -438,15 +445,26 @@
 
             <!-- Return to Call Button -->
             <div class="absolute bottom-4 inset-x-4 z-20">
-              <button onclick="navigateTo('voice')" class="w-full py-2 bg-neutral-900/90 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold border border-neutral-700 backdrop-blur shadow-2xl">
+              <button onclick="goBack()" class="w-full py-2 bg-neutral-900/90 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold border border-neutral-700 backdrop-blur shadow-2xl transition-all">
                 Return to GameVoice Call
               </button>
             </div>
           </div>
 
-          <!-- Bottom Home Bar Indicator -->
-          <div class="h-4 flex items-center justify-center pb-1 shrink-0">
-            <div class="w-24 h-1 bg-neutral-600/60 rounded-full"></div>
+          <!-- Android System 3-Button Navigation Bar (Functional Back, Home, Recents) -->
+          <div class="h-8 bg-[#0a0b0e] border-t border-neutral-800/80 px-8 flex items-center justify-between shrink-0 select-none">
+            <!-- Back Button -->
+            <button onclick="goBack()" title="System Back" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <!-- Home Button -->
+            <button onclick="navigateTo('channels')" title="Home / Server Hub" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
+              <div class="w-3.5 h-3.5 rounded-full border-2 border-neutral-400 hover:border-white"></div>
+            </button>
+            <!-- Recents / Overlay Switcher -->
+            <button onclick="navigateTo('overlay')" title="Recent Apps / Game Overlay" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
+              <div class="w-3.5 h-3.5 rounded-sm border-2 border-neutral-400 hover:border-white"></div>
+            </button>
           </div>
         </div>
       </div>
@@ -803,7 +821,16 @@
       }
     };
 
-    function navigateTo(screenName) {
+    // Navigation History Stack
+    let navHistory = [];
+
+    function navigateTo(screenName, isBack = false) {
+      if (state.currentScreen === screenName) return;
+      
+      // Push previous screen to history stack if not navigating back
+      if (!isBack && state.currentScreen) {
+        navHistory.push(state.currentScreen);
+      }
       state.currentScreen = screenName;
       
       // Toggle phone screen divs
@@ -834,6 +861,29 @@
         });
         document.getElementById('feature-checklist').innerHTML = listHtml;
       }
+    }
+
+    function goBack() {
+      if (navHistory.length > 0) {
+        const prev = navHistory.pop();
+        navigateTo(prev, true);
+      } else {
+        // Context-aware sensible fallbacks if history is empty
+        if (state.currentScreen === 'chat' || state.currentScreen === 'voice') {
+          navigateTo('channels', true);
+        } else if (state.currentScreen === 'channels') {
+          navigateTo('auth', true);
+        } else if (state.currentScreen === 'overlay') {
+          navigateTo('voice', true);
+        } else if (state.currentScreen === 'auth') {
+          navigateTo('channels', true);
+        }
+      }
+    }
+
+    function leaveCall() {
+      // Disconnecting returns user directly to the group channels hub
+      navigateTo('channels');
     }
 
     function setViewMode(mode) {
