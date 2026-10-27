@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameVoice UI/UX Prototype & Component Reference</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Custom scrollbars */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Speaking Pulse Animation */
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .speaking-glow {
+      animation: pulse-ring 1.8s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    /* Floating drag simulation */
+    .floating-hud {
+      transition: transform 0.15s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-[#0b0c10] text-[#e2e8f0] antialiased min-h-screen p-3 md:p-6">
+
+  <!-- Top Navigation Bar -->
+  <header class="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-600/30">
+        G
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-lg font-bold text-white tracking-tight">GameVoice Mobile UI Architecture</h1>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono">Jetpack Compose Spec</span>
+        </div>
+        <p class="text-xs text-neutral-400">Component breakdown & interactive mobile UX prototype for developer reference</p>
+      </div>
+    </div>
+
+    <!-- Mode Switch: Full App Simulator vs Component Catalog -->
+    <div class="flex items-center gap-2 p-1 bg-neutral-900 border border-neutral-800 rounded-xl">
+      <button onclick="setViewMode('simulator')" id="btn-mode-sim" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all">
+        📱 App Simulator
+      </button>
+      <button onclick="setViewMode('components')" id="btn-mode-comp" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all">
+        🧩 Component Breakdown
+      </button>
+      <button onclick="setViewMode('tokens')" id="btn-mode-tokens" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all">
+        🎨 Design Tokens
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 1: APP SIMULATOR (Live Interactive Phone View)      -->
+  <!-- ======================================================== -->
+  <main id="view-simulator" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Phone Mockup Container (Col 5) -->
+    <div class="lg:col-span-5 flex flex-col items-center">
+      <!-- Screen Switcher Pills -->
+      <div class="w-[340px] mb-3 flex items-center justify-between bg-neutral-900/90 border border-neutral-800 p-1 rounded-xl">
+        <button onclick="navigateTo('auth')" id="nav-auth" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Auth</button>
+        <button onclick="navigateTo('channels')" id="nav-channels" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Hub</button>
+        <button onclick="navigateTo('chat')" id="nav-chat" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-600 text-white transition-colors">Chat</button>
+        <button onclick="navigateTo('voice')" id="nav-voice" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Voice</button>
+        <button onclick="navigateTo('overlay')" id="nav-overlay" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Overlay</button>
+      </div>
+
+      <!-- Phone Chassis -->
+      <div class="relative w-[340px] h-[690px] bg-neutral-950 rounded-[44px] p-3 shadow-2xl border-4 border-neutral-800 ring-1 ring-white/10 flex flex-col overflow-hidden">
+        <!-- Speaker / Camera Notch -->
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-neutral-900 rounded-full z-50 flex items-center justify-center">
+          <div class="w-2.5 h-2.5 rounded-full bg-neutral-800 mr-2"></div>
+          <div class="w-10 h-1 rounded-full bg-neutral-800"></div>
+        </div>
+
+        <!-- Inner Touch Display Area -->
+        <div class="relative w-full h-full bg-[#101116] text-white rounded-[34px] overflow-hidden flex flex-col pt-7 select-none">
+          
+          <!-- System Status Bar -->
+          <div class="h-6 px-5 flex items-center justify-between text-xs text-neutral-400 font-medium shrink-0">
+            <span id="phone-clock">20:45</span>
+            <div class="flex items-center gap-1.5">
+              <span id="sim-network-badge" class="text-[10px] px-1 rounded bg-emerald-500/20 text-emerald-400 font-mono">5G</span>
+              <svg class="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.5-.47 2.89-1.28 4.04L12 19.34l-5.72-3.3C5.47 14.89 5 13.5 5 12c0-3.87 3.13-7 7-7z"/></svg>
+              <svg class="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+          </div>
+
+          <!-- Reconnect Catch-up Toast Banner -->
+          <div id="sim-reconnect-banner" class="hidden mx-2 mt-1 py-1 px-2.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs flex items-center justify-between z-40">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+              <span>Reconnecting to Wi-Fi...</span>
+            </div>
+            <span class="text-[10px] font-mono">Resuming ID #492</span>
+          </div>
+
+          <!-- SCREEN: AUTH -->
+          <div id="screen-auth" class="screen-panel hidden flex-1 p-5 flex flex-col justify-between">
+            <div class="space-y-4 pt-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-600/30">
+                G
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-white tracking-tight">Create Squad Account</h2>
+                <p class="text-xs text-neutral-400 mt-0.5">Quick setup. No email verification required.</p>
+              </div>
+
+              <div class="space-y-3 pt-1">
+                <div>
+                  <label class="text-xs text-neutral-400 font-medium block mb-1">Gamer Handle</label>
+                  <input id="input-username" type="text" value="ApexShooter99" class="w-full bg-[#181920] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                  <label class="text-xs text-neutral-400 font-medium block mb-1">Password</label>
+                  <input type="password" value="secretpassword" class="w-full bg-[#181920] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                  <label class="text-xs text-neutral-400 font-medium block mb-1.5">Pick Avatar</label>
+                  <div class="flex gap-2">
+                    <button onclick="selectAvatar(this, '🎮')" class="avatar-opt w-9 h-9 rounded-xl bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center text-sm">🎮</button>
+                    <button onclick="selectAvatar(this, '🐺')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">🐺</button>
+                    <button onclick="selectAvatar(this, '⚡')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">⚡</button>
+                    <button onclick="selectAvatar(this, '🎯')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">🎯</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 pb-3">
+              <button onclick="navigateTo('channels')" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all">
+                Enter App
+              </button>
+              <div class="text-center text-[11px] text-neutral-500">Component: <code class="font-mono text-neutral-400">AuthScreen</code></div>
+            </div>
+          </div>
+
+          <!-- SCREEN: HUB / CHANNELS -->
+          <div id="screen-channels" class="screen-panel hidden flex-1 flex overflow-hidden">
+            <!-- Left Server Rail -->
+            <div class="w-14 bg-[#0a0b0e] flex flex-col items-center py-3 gap-2.5 border-r border-neutral-800/80">
+              <div class="relative group cursor-pointer" onclick="selectServer('Apex Squad')">
+                <div class="absolute -left-3 top-2 w-1 h-6 bg-indigo-500 rounded-r-full"></div>
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
+                  APX
+                </div>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-xs font-medium text-neutral-300 cursor-pointer" onclick="selectServer('PUBG Elite')">
+                PUB
+              </div>
+              <div class="w-10 h-10 rounded-2xl border border-dashed border-neutral-700 hover:border-neutral-500 flex items-center justify-center text-xs text-neutral-400 cursor-pointer">
+                +
+              </div>
+            </div>
+
+            <!-- Right Channels List -->
+            <div class="flex-1 bg-[#12131a] flex flex-col">
+              <!-- Group Header -->
+              <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
+                <span class="font-bold text-xs tracking-wide text-neutral-100" id="server-title">Apex Squad</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700">Code: 8492</span>
+              </div>
+
+              <!-- Channel List Scroll Area -->
+              <div class="flex-1 p-2 space-y-4 overflow-y-auto no-scrollbar">
+                <!-- Text Channels -->
+                <div>
+                  <div class="px-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">Text Channels</div>
+                  <div class="space-y-1">
+                    <div onclick="navigateTo('chat')" class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-neutral-800/60 text-white font-medium text-xs cursor-pointer hover:bg-neutral-800">
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-neutral-400 font-bold">#</span>
+                        <span>match-tactics</span>
+                      </div>
+                      <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-neutral-400 hover:bg-neutral-800/40 text-xs cursor-pointer">
+                      <span class="text-neutral-500 font-bold">#</span>
+                      <span>clips-and-brags</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Voice Channels -->
+                <div>
+                  <div class="px-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">Voice Channels</div>
+                  <div class="space-y-1">
+                    <!-- Active voice channel card with attendees -->
+                    <div onclick="navigateTo('voice')" class="p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 cursor-pointer hover:border-indigo-500/60 transition-all">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                          <span class="text-emerald-400 text-xs">🔊</span>
+                          <span class="text-xs font-semibold text-white">Ranked Room A</span>
+                        </div>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-semibold">3 Active</span>
+                      </div>
+                      
+                      <!-- Mini Live Speaker Preview -->
+                      <div class="mt-2 pl-4 space-y-1 border-l-2 border-indigo-500/30">
+                        <div class="flex items-center gap-1.5 text-xs text-neutral-200">
+                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span class="text-emerald-300 font-medium">ShadowGamer</span>
+                          <span class="text-[10px] text-neutral-400">(talking)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs text-neutral-400">
+                          <span class="w-2 h-2 rounded-full bg-neutral-600"></span>
+                          <span>Krypton</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-neutral-400 hover:bg-neutral-800/40 text-xs cursor-pointer">
+                      <span class="text-neutral-500 text-xs">🔊</span>
+                      <span>Lobby 2</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Bottom Bar -->
+              <div class="p-2 border-t border-neutral-800 bg-[#0e0f14] flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs">🎮</div>
+                  <div>
+                    <div class="text-xs font-semibold text-neutral-200 leading-none">ApexShooter99</div>
+                    <div class="text-[10px] text-emerald-400 leading-tight">Online</div>
+                  </div>
+                </div>
+                <button onclick="toggleGlobalMute()" id="btn-dock-mute" class="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCREEN: TEXT CHAT -->
+          <div id="screen-chat" class="screen-panel flex-1 flex flex-col bg-[#12131a]">
+            <!-- Header with Quick Join Call -->
+            <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between bg-[#0e0f14]">
+              <div class="flex items-center gap-2">
+                <button onclick="navigateTo('channels')" class="text-neutral-400 hover:text-white">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span class="text-neutral-400 font-bold text-xs">#</span>
+                <span class="font-bold text-xs text-white">match-tactics</span>
+              </div>
+              <button onclick="navigateTo('voice')" class="px-2 py-0.8 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-emerald-500/30 transition-colors">
+                <span>🔊 In Call (3)</span>
+              </button>
+            </div>
+
+            <!-- Messages Stream -->
+            <div id="chat-messages-container" class="flex-1 p-3 space-y-3 overflow-y-auto no-scrollbar">
+              <div class="text-center my-0.5">
+                <span class="px-2 py-0.5 rounded-full bg-neutral-800/80 text-[10px] text-neutral-400 border border-neutral-700/50">
+                  ⚡ 50 messages restored from local SQLite cache
+                </span>
+              </div>
+
+              <!-- Message 1 -->
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0">🐺</div>
+                <div class="flex-1">
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-xs font-bold text-emerald-400">ShadowGamer</span>
+                    <span class="text-[10px] text-neutral-500">20:38</span>
+                  </div>
+                  <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
+                    East bunker zone is clear. Grab heavy ammo there.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message 2 -->
+              <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded-lg bg-cyan-600/30 border border-cyan-500/40 flex items-center justify-center text-xs shrink-0">⚡</div>
+                <div class="flex-1">
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-xs font-bold text-cyan-400">Krypton</span>
+                    <span class="text-[10px] text-neutral-500">20:41</span>
+                  </div>
+                  <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
+                    Roger. Setting fences now.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message 3 (User) -->
+              <div class="flex items-start gap-2 flex-row-reverse">
+                <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs shrink-0">🎮</div>
+                <div class="flex-1 text-right">
+                  <div class="flex items-baseline gap-1.5 justify-end">
+                    <span class="text-[10px] text-neutral-500">20:42</span>
+                    <span class="text-xs font-bold text-indigo-400">You</span>
+                  </div>
+                  <div class="text-xs text-white mt-0.5 bg-indigo-600 p-2 rounded-xl rounded-tr-none inline-block text-left shadow-sm">
+                    In the match! Switching voice to background.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Input Dock -->
+            <form onsubmit="handleSendChat(event)" class="p-2 bg-[#0e0f14] border-t border-neutral-800 flex items-center gap-1.5">
+              <input id="chat-input" type="text" placeholder="Message #match-tactics..." class="flex-1 bg-[#1a1b24] border border-neutral-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500">
+              <button type="submit" class="w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md">
+                <svg class="w-3.5 h-3.5 rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- SCREEN: VOICE ROOM -->
+          <div id="screen-voice" class="screen-panel hidden flex-1 flex flex-col bg-[#0b0c10]">
+            <!-- Voice Room Header -->
+            <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Ranked Room A</span>
+                </div>
+                <div class="text-[10px] text-neutral-400">Opus 24kbps • DTX Active • RT 18ms</div>
+              </div>
+              <button onclick="navigateTo('chat')" class="text-neutral-400 hover:text-white p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+
+            <!-- Participants Grid -->
+            <div class="flex-1 p-3 grid grid-cols-2 gap-2.5 overflow-y-auto no-scrollbar content-start">
+              <!-- Tile 1: Active Speaker -->
+              <div id="voice-tile-shadow" class="bg-[#14161f] border-2 border-emerald-500 rounded-2xl p-3 flex flex-col items-center justify-center relative speaking-glow">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-xl mb-1">
+                  🐺
+                </div>
+                <span class="text-xs font-bold text-white">ShadowGamer</span>
+                <span class="text-[10px] text-emerald-400 font-medium">Speaking...</span>
+                <span class="absolute top-2 right-2 text-xs">🔊</span>
+              </div>
+
+              <!-- Tile 2: Silent Teammate -->
+              <div class="bg-[#14161f] border border-neutral-800 rounded-2xl p-3 flex flex-col items-center justify-center relative">
+                <div class="w-11 h-11 rounded-2xl bg-cyan-600/30 border border-cyan-500/30 flex items-center justify-center text-xl mb-1">
+                  ⚡
+                </div>
+                <span class="text-xs font-bold text-white">Krypton</span>
+                <span class="text-[10px] text-neutral-500">Silent</span>
+              </div>
+
+              <!-- Tile 3: Self -->
+              <div class="bg-[#14161f] border border-indigo-500/40 rounded-2xl p-3 flex flex-col items-center justify-center relative col-span-2">
+                <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-xl mb-1">
+                  🎮
+                </div>
+                <span class="text-xs font-bold text-white">ApexShooter99 (You)</span>
+                <div class="flex items-center gap-1.5 mt-1">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">Voice Activity Mode</span>
+                  <span id="label-audio-route" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700">Bluetooth Out</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Voice Controls Sheet -->
+            <div class="p-3 bg-[#111218] border-t border-neutral-800 rounded-t-2xl space-y-2.5">
+              <div class="flex items-center justify-around">
+                <!-- Mute Button -->
+                <button onclick="toggleVoiceMute()" id="btn-voice-mute" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
+                  <svg id="icon-voice-mic" class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                  <span id="label-voice-mute" class="text-[9px] mt-0.5">Mute</span>
+                </button>
+                <!-- Deafen Button -->
+                <button onclick="toggleDeafen()" id="btn-voice-deafen" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
+                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                  <span id="label-voice-deafen" class="text-[9px] mt-0.5">Deafen</span>
+                </button>
+                <!-- Route Switcher -->
+                <button onclick="cycleAudioRoute()" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
+                  <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
+                  <span id="label-btn-route" class="text-[9px] mt-0.5 text-cyan-400">BT Audio</span>
+                </button>
+                <!-- Disconnect -->
+                <button onclick="navigateTo('channels')" class="w-11 h-11 rounded-xl bg-rose-600 hover:bg-rose-500 flex flex-col items-center justify-center text-white shadow-lg shadow-rose-600/30 transition-all">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"/></svg>
+                  <span class="text-[9px] mt-0.5">Leave</span>
+                </button>
+              </div>
+
+              <button onclick="navigateTo('overlay')" class="w-full py-2 bg-neutral-800 hover:bg-neutral-750 text-neutral-300 rounded-xl text-xs font-medium border border-neutral-700 flex items-center justify-center gap-1.5">
+                <span>📱 Simulate Game Overlay</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SCREEN: IN-GAME OVERLAY SIMULATION -->
+          <div id="screen-overlay" class="screen-panel hidden flex-1 flex flex-col relative bg-neutral-900 overflow-hidden">
+            <!-- Simulated 3D Mobile Game Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-amber-950 flex flex-col items-center justify-center text-center p-4">
+              <div class="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl mb-2 shadow-xl shadow-amber-500/20">
+                🎮
+              </div>
+              <div class="text-xs font-black tracking-widest text-amber-300 uppercase">Battle Royale 3D</div>
+              <div class="text-[11px] text-neutral-400 mt-1 max-w-[200px]">Game in foreground. Audio focus shared concurrently.</div>
+            </div>
+
+            <!-- Android Persistent Notification Banner (Foreground Service) -->
+            <div class="relative z-10 m-2 p-2 rounded-xl bg-neutral-900/90 backdrop-blur border border-neutral-700 text-white shadow-xl flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div>
+                  <div class="text-[11px] font-semibold leading-tight">GameVoice Call Active</div>
+                  <div class="text-[10px] text-neutral-400">Ranked Room A (3 in call)</div>
+                </div>
+              </div>
+              <span class="text-[10px] text-emerald-400 font-mono px-1.5 py-0.5 rounded bg-emerald-500/10">DTX ON</span>
+            </div>
+
+            <!-- FLOATING IN-GAME MUTE OVERLAY (SYSTEM_ALERT_WINDOW) -->
+            <div id="floating-overlay-widget" class="absolute top-28 right-3 z-30 flex flex-col items-end gap-1.5 floating-hud cursor-grab active:cursor-grabbing">
+              <!-- Active Speaker Toast -->
+              <div id="hud-speaker-pill" class="bg-black/85 backdrop-blur-md border border-emerald-500/70 rounded-full px-2.5 py-0.8 flex items-center gap-1.5 shadow-2xl">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-[11px] text-white font-medium">ShadowGamer</span>
+              </div>
+
+              <!-- Main Floating Mute Bubble -->
+              <div onclick="toggleVoiceMute()" id="hud-mute-bubble" class="w-13 h-13 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 backdrop-blur border-2 border-white/30 shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-transform active:scale-95">
+                <svg id="hud-mic-icon" class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                <span id="hud-mic-label" class="text-[8px] font-bold text-white uppercase tracking-wider">Mute</span>
+              </div>
+            </div>
+
+            <!-- Return to Call Button -->
+            <div class="absolute bottom-4 inset-x-4 z-20">
+              <button onclick="navigateTo('voice')" class="w-full py-2 bg-neutral-900/90 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold border border-neutral-700 backdrop-blur shadow-2xl">
+                Return to GameVoice Call
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Home Bar Indicator -->
+          <div class="h-4 flex items-center justify-center pb-1 shrink-0">
+            <div class="w-24 h-1 bg-neutral-600/60 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simulator Interactive Controls & Feature Inspector (Col 7) -->
+    <div class="lg:col-span-7 space-y-5">
+      <!-- Live State Simulator Panel -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+            <span>🎮</span> Live Mobile State Simulator
+          </h3>
+          <span class="text-[11px] text-neutral-400">Click actions below to trigger phone UI reactions</span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <button onclick="toggleSpeakerSimulation()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
+            <div class="text-xs font-semibold text-white">Voice Activity</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Toggle speaker talking pulse</div>
+          </button>
+          <button onclick="toggleReconnectSimulation()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
+            <div class="text-xs font-semibold text-white">Network Switch</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Simulate Wi-Fi ↔ LTE handoff</div>
+          </button>
+          <button onclick="simulateIncomingChat()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
+            <div class="text-xs font-semibold text-white">Incoming Msg</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Simulate realtime push stream</div>
+          </button>
+          <button onclick="cycleAudioRoute()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
+            <div class="text-xs font-semibold text-white">Audio Output</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">BT → Speaker → Earpiece</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feature Architecture Callout -->
+      <div id="screen-info-card" class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+          <div>
+            <span class="text-xs font-bold text-indigo-400 font-mono uppercase" id="feature-id">FEATURE: TEXT CHAT</span>
+            <h2 class="text-base font-bold text-white mt-0.5" id="feature-title">Local Cache & Reconnection Resumption</h2>
+          </div>
+          <span class="text-xs font-mono px-2 py-1 bg-neutral-800 text-indigo-300 rounded-lg" id="feature-compose">@Composable ChatScreen</span>
+        </div>
+
+        <div class="text-xs text-neutral-300 space-y-2 leading-relaxed" id="feature-desc">
+          <p><strong>Mobile Problem:</strong> Opening a chat app while waiting for a game match shouldn't show a blank loading spinner. Network dropped during subway commutes or Wi-Fi handoffs shouldn't lose messages.</p>
+          <p><strong>Architecture Solution:</strong> The Android client queries the local SQLite/Room database instantly on cold launch. Concurrently, the client sends a <code class="text-indigo-300 bg-neutral-800 px-1 py-0.5 rounded font-mono">SyncMessages(last_message_id)</code> request to retrieve any messages sent while offline or disconnected.</p>
+        </div>
+
+        <!-- Jetpack Compose Implementation Notes -->
+        <div class="p-3 bg-[#13141c] border border-neutral-800 rounded-xl space-y-2">
+          <div class="text-xs font-semibold text-white flex items-center gap-1.5">
+            <span class="text-indigo-400 font-mono">{ }</span> Key Compose & Android Components:
+          </div>
+          <ul class="text-xs text-neutral-400 space-y-1 list-disc pl-4" id="feature-checklist">
+            <li><code class="text-neutral-200 font-mono">LazyColumn(reverseLayout = true)</code> for smooth inverted chat history scrolling</li>
+            <li><code class="text-neutral-200 font-mono">Room Database + Paging 3</code> for instantaneous offline reads</li>
+            <li>WebSocket client with exponential backoff & auto-resume token</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ======================================================== -->
+  <!-- VIEW 2: COMPONENT BREAKDOWN (Jetpack Compose Spec)       -->
+  <!-- ======================================================== -->
+  <section id="view-components" class="hidden max-w-7xl mx-auto space-y-6">
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+      <h2 class="text-base font-bold text-white">Jetpack Compose Component Hierarchy</h2>
+      <p class="text-xs text-neutral-400 mt-1">Modular component breakdown mapped to Android architecture and Go protobuf contracts.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      
+      <!-- Component 1: VoiceChannelTile -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-emerald-400 font-mono">ChannelList</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">VoiceChannelTile</h3>
+        <p class="text-xs text-neutral-400">Renders voice channel in the group drawer, displaying active count and pulsing green dot for real-time speakers without joining.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-3 bg-[#14161f] border border-indigo-500/30 rounded-xl">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-white font-semibold flex items-center gap-1.5"><span>🔊</span> Ranked Room A</span>
+            <span class="text-[10px] text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded font-mono">3 Active</span>
+          </div>
+          <div class="mt-2 text-[11px] text-emerald-300 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>ShadowGamer (speaking)</span>
+          </div>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>@Composable fun VoiceChannelTile(<br>
+          &nbsp;&nbsp;channel: VoiceChannel,<br>
+          &nbsp;&nbsp;activeSpeakers: List&lt;User&gt;,<br>
+          &nbsp;&nbsp;onJoinClick: () -> Unit<br>
+          )</code>
+        </div>
+      </div>
+
+      <!-- Component 2: SpeakerTile -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-indigo-400 font-mono">VoiceCall</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">SpeakerGridTile</h3>
+        <p class="text-xs text-neutral-400">Card tile in the voice room grid showing participant avatar, handle, audio volume wave, and dynamic speaking glow ring.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-3 bg-[#14161f] border-2 border-emerald-500 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-lg">🐺</div>
+          <div>
+            <div class="text-xs font-bold text-white">ShadowGamer</div>
+            <div class="text-[10px] text-emerald-400 font-medium">Speaking (VAD active)</div>
+          </div>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>@Composable fun SpeakerGridTile(<br>
+          &nbsp;&nbsp;participant: ParticipantState,<br>
+          &nbsp;&nbsp;isSpeaking: Boolean,<br>
+          &nbsp;&nbsp;isMuted: Boolean<br>
+          )</code>
+        </div>
+      </div>
+
+      <!-- Component 3: FloatingMuteHUD -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-400 font-mono">Overlay</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Android Service</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">FloatingOverlayHUD</h3>
+        <p class="text-xs text-neutral-400">Android <code class="text-neutral-300 font-mono">SYSTEM_ALERT_WINDOW</code> floating view. Stays on top of games with one-tap mic mute and active speaker pill.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-3 bg-[#14161f] border border-neutral-700 rounded-xl flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-xs text-white font-medium">ShadowGamer</span>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+            M
+          </div>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>class FloatingOverlayService : Service() {<br>
+          &nbsp;&nbsp;// WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY<br>
+          &nbsp;&nbsp;fun updateSpeaker(user: String)<br>
+          &nbsp;&nbsp;fun toggleMute()<br>
+          }</code>
+        </div>
+      </div>
+
+      <!-- Component 4: MessageBubble -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-cyan-400 font-mono">Chat</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">MessageBubble</h3>
+        <p class="text-xs text-neutral-400">Renders incoming and outgoing chat messages with cached status, sender handle, timestamp, and avatar.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-3 bg-[#14161f] border border-neutral-800 rounded-xl space-y-1">
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="font-bold text-cyan-400">Krypton</span>
+            <span class="text-[10px] text-neutral-500">20:41</span>
+          </div>
+          <div class="text-xs text-neutral-200 bg-neutral-800/60 p-2 rounded-lg">
+            Setting perimeter fences now.
+          </div>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>@Composable fun MessageBubble(<br>
+          &nbsp;&nbsp;message: ChatMessage,<br>
+          &nbsp;&nbsp;isSelf: Boolean<br>
+          )</code>
+        </div>
+      </div>
+
+      <!-- Component 5: VoiceControlsBar -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-rose-400 font-mono">VoiceCall</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">VoiceControlsBar</h3>
+        <p class="text-xs text-neutral-400">Bottom action bar featuring large ergonomic targets for Mute, Deafen, Audio Route (BT/Speaker), and Call Disconnect.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-2.5 bg-[#14161f] border border-neutral-800 rounded-xl flex items-center justify-around">
+          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs">🎤</span>
+          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs">🔇</span>
+          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs text-cyan-400">🎧</span>
+          <span class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-xs text-white">✕</span>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>@Composable fun VoiceControlsBar(<br>
+          &nbsp;&nbsp;isMuted: Boolean, onMuteToggle: () -> Unit,<br>
+          &nbsp;&nbsp;audioDevice: AudioDevice, onDeviceChange: () -> Unit,<br>
+          &nbsp;&nbsp;onDisconnect: () -> Unit<br>
+          )</code>
+        </div>
+      </div>
+
+      <!-- Component 6: ServerRail -->
+      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-purple-400 font-mono">Navigation</span>
+          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+        </div>
+        <h3 class="text-sm font-bold text-white">ServerNavigationRail</h3>
+        <p class="text-xs text-neutral-400">Left-side vertical server strip with rounded icon badges, active selection pills, and new server join trigger.</p>
+        
+        <!-- Live Mini Component Preview -->
+        <div class="p-2.5 bg-[#14161f] border border-neutral-800 rounded-xl flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">APX</div>
+          <div class="w-8 h-8 rounded-xl bg-neutral-800 text-neutral-300 text-xs flex items-center justify-center">PUB</div>
+          <div class="w-8 h-8 rounded-xl border border-dashed border-neutral-700 text-neutral-500 text-xs flex items-center justify-center">+</div>
+        </div>
+
+        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
+          <code>@Composable fun ServerNavigationRail(<br>
+          &nbsp;&nbsp;groups: List&lt;Group&gt;,<br>
+          &nbsp;&nbsp;selectedGroupId: String,<br>
+          &nbsp;&nbsp;onGroupSelected: (String) -> Unit<br>
+          )</code>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- VIEW 3: DESIGN TOKENS (Color & Typography Spec)          -->
+  <!-- ======================================================== -->
+  <section id="view-tokens" class="hidden max-w-7xl mx-auto space-y-6">
+    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
+      <h2 class="text-base font-bold text-white">Mobile Gaming Design Tokens</h2>
+      <p class="text-xs text-neutral-400 mt-1">Palette and typography optimized for AMOLED displays, zero glare, and clear in-game legibility.</p>
+    </div>
+
+    <!-- Color Palette Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
+        <div class="h-14 rounded-xl bg-[#0b0c10] border border-neutral-800"></div>
+        <div class="text-xs font-bold text-white">Background Root</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#0B0C10 (AMOLED Pure)</div>
+      </div>
+
+      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
+        <div class="h-14 rounded-xl bg-[#12131a] border border-neutral-800"></div>
+        <div class="text-xs font-bold text-white">Surface Secondary</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#12131A (Channel List)</div>
+      </div>
+
+      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
+        <div class="h-14 rounded-xl bg-indigo-600"></div>
+        <div class="text-xs font-bold text-white">Accent Brand</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#4F46E5 (Primary Buttons)</div>
+      </div>
+
+      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
+        <div class="h-14 rounded-xl bg-emerald-500"></div>
+        <div class="text-xs font-bold text-white">Voice Speaking</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#10B981 (Active VAD Pulse)</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- JavaScript State Controller -->
+  <script>
+    // State
+    const state = {
+      currentScreen: 'chat',
+      isMuted: false,
+      isDeafened: false,
+      isSpeaking: true,
+      audioRouteIdx: 0,
+      routes: ['Bluetooth Out', 'Speaker Out', 'Earpiece Out'],
+      isReconnecting: false
+    };
+
+    const screenData = {
+      auth: {
+        featureId: "FEATURE: ACCOUNTS & ONBOARDING",
+        title: "Frictionless Gamer Authentication",
+        compose: "@Composable AuthScreen",
+        desc: "<p><strong>UX Philosophy:</strong> Gamers drop off when forced into email verification loops while their squad waits. The MVP provides instant entry with handle + avatar.</p>",
+        checklist: [
+          "JWT session storage in EncryptedSharedPreferences",
+          "One-tap starter avatar selection (🎮, 🐺, ⚡, 🎯)",
+          "Zero verification latency: straight to squad channel list"
+        ]
+      },
+      channels: {
+        featureId: "FEATURE: GROUPS & CHANNELS",
+        title: "Server Navigation & Live Voice Badges",
+        compose: "@Composable ChannelListScreen",
+        desc: "<p><strong>UX Philosophy:</strong> Players want to know if someone is already talking before joining a voice channel. Real-time participant counters and speaker pulses render directly in the drawer.</p>",
+        checklist: [
+          "Vertical navigation rail for servers and group join codes",
+          "Voice channel cards with live attendee counts",
+          "Persistent user bottom dock with quick mic toggle"
+        ]
+      },
+      chat: {
+        featureId: "FEATURE: TEXT CHAT",
+        title: "Local Cache & Reconnection Resumption",
+        compose: "@Composable ChatScreen",
+        desc: "<p><strong>Mobile Problem:</strong> Opening a chat app while waiting for a game match shouldn't show a blank loading spinner. Network dropped during subway commutes or Wi-Fi handoffs shouldn't lose messages.</p><p><strong>Architecture Solution:</strong> The Android client queries the local SQLite/Room database instantly on cold launch. Concurrently, the client sends a <code class='text-indigo-300 bg-neutral-800 px-1 py-0.5 rounded font-mono'>SyncMessages(last_message_id)</code> request to retrieve any messages sent while offline or disconnected.</p>",
+        checklist: [
+          "LazyColumn(reverseLayout = true) for smooth inverted chat history scrolling",
+          "Room Database + Paging 3 for instantaneous offline reads",
+          "WebSocket client with exponential backoff & auto-resume token"
+        ]
+      },
+      voice: {
+        featureId: "FEATURE: LIVEKIT WEBRTC CALL",
+        title: "Foreground Call Engine & Audio Focus",
+        compose: "@Composable VoiceRoomScreen",
+        desc: "<p><strong>Android In-Game Differentiator:</strong> Heavy 3D games take foreground resources. Our Foreground Service with persistent microphone notification prevents the OS from killing WebRTC sessions mid-game.</p>",
+        checklist: [
+          "Opus codec at 24kbps with DTX (Discontinuous Transmission for silence suppression)",
+          "AudioManager non-exclusive voice communication audio mode",
+          "Dynamic visual speaker ring highlighting the active talker in real time"
+        ]
+      },
+      overlay: {
+        featureId: "FEATURE: IN-GAME OVERLAY",
+        title: "SYSTEM_ALERT_WINDOW Floating HUD",
+        compose: "FloatingOverlayService.kt",
+        desc: "<p><strong>UX Philosophy:</strong> Never make players alt-tab out of an active firefight to mute their microphone or check who is yelling callouts.</p>",
+        checklist: [
+          "Compact draggable floating pill anchored to screen edges",
+          "One-tap instant mic toggle floating above active game renderers",
+          "Active speaker toast showing teammate's gamer handle"
+        ]
+      }
+    };
+
+    function navigateTo(screenName) {
+      state.currentScreen = screenName;
+      
+      // Toggle phone screen divs
+      document.querySelectorAll('.screen-panel').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById('screen-' + screenName);
+      if (target) target.classList.remove('hidden');
+
+      // Update Nav buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors";
+      });
+      const activeNav = document.getElementById('nav-' + screenName);
+      if (activeNav) {
+        activeNav.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-600 text-white transition-colors";
+      }
+
+      // Update feature info card
+      const info = screenData[screenName];
+      if (info) {
+        document.getElementById('feature-id').innerText = info.featureId;
+        document.getElementById('feature-title').innerText = info.title;
+        document.getElementById('feature-compose').innerText = info.compose;
+        document.getElementById('feature-desc').innerHTML = info.desc;
+        
+        let listHtml = "";
+        info.checklist.forEach(item => {
+          listHtml += `<li>${item}</li>`;
+        });
+        document.getElementById('feature-checklist').innerHTML = listHtml;
+      }
+    }
+
+    function setViewMode(mode) {
+      document.getElementById('view-simulator').classList.add('hidden');
+      document.getElementById('view-components').classList.add('hidden');
+      document.getElementById('view-tokens').classList.add('hidden');
+
+      document.getElementById('btn-mode-sim').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
+      document.getElementById('btn-mode-comp').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
+      document.getElementById('btn-mode-tokens').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
+
+      if (mode === 'simulator') {
+        document.getElementById('view-simulator').classList.remove('hidden');
+        document.getElementById('btn-mode-sim').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+      } else if (mode === 'components') {
+        document.getElementById('view-components').classList.remove('hidden');
+        document.getElementById('btn-mode-comp').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+      } else if (mode === 'tokens') {
+        document.getElementById('view-tokens').classList.remove('hidden');
+        document.getElementById('btn-mode-tokens').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+      }
+    }
+
+    function toggleVoiceMute() {
+      state.isMuted = !state.isMuted;
+      const muteBtn = document.getElementById('btn-voice-mute');
+      const muteLabel = document.getElementById('label-voice-mute');
+      const hudBubble = document.getElementById('hud-mute-bubble');
+      const hudLabel = document.getElementById('hud-mic-label');
+
+      if (state.isMuted) {
+        muteBtn.classList.replace('bg-neutral-800', 'bg-rose-600');
+        muteBtn.classList.replace('border-neutral-700', 'border-rose-500');
+        muteLabel.innerText = "Muted";
+        hudBubble.classList.replace('bg-indigo-600', 'bg-rose-600');
+        hudLabel.innerText = "Muted";
+      } else {
+        muteBtn.classList.replace('bg-rose-600', 'bg-neutral-800');
+        muteBtn.classList.replace('border-rose-500', 'border-neutral-700');
+        muteLabel.innerText = "Mute";
+        hudBubble.classList.replace('bg-rose-600', 'bg-indigo-600');
+        hudLabel.innerText = "Mute";
+      }
+    }
+
+    function toggleGlobalMute() {
+      toggleVoiceMute();
+    }
+
+    function toggleDeafen() {
+      state.isDeafened = !state.isDeafened;
+      const deafBtn = document.getElementById('btn-voice-deafen');
+      const deafLabel = document.getElementById('label-voice-deafen');
+      if (state.isDeafened) {
+        deafBtn.classList.replace('bg-neutral-800', 'bg-amber-600');
+        deafLabel.innerText = "Deafened";
+      } else {
+        deafBtn.classList.replace('bg-amber-600', 'bg-neutral-800');
+        deafLabel.innerText = "Deafen";
+      }
+    }
+
+    function cycleAudioRoute() {
+      state.audioRouteIdx = (state.audioRouteIdx + 1) % state.routes.length;
+      const current = state.routes[state.audioRouteIdx];
+      document.getElementById('label-audio-route').innerText = current;
+      document.getElementById('label-btn-route').innerText = current.split(' ')[0];
+    }
+
+    function toggleSpeakerSimulation() {
+      state.isSpeaking = !state.isSpeaking;
+      const tile = document.getElementById('voice-tile-shadow');
+      const hudPill = document.getElementById('hud-speaker-pill');
+
+      if (state.isSpeaking) {
+        tile.classList.add('speaking-glow', 'border-emerald-500');
+        tile.classList.remove('border-neutral-800');
+        hudPill.classList.remove('hidden');
+      } else {
+        tile.classList.remove('speaking-glow', 'border-emerald-500');
+        tile.classList.add('border-neutral-800');
+        hudPill.classList.add('hidden');
+      }
+    }
+
+    function toggleReconnectSimulation() {
+      state.isReconnecting = !state.isReconnecting;
+      const banner = document.getElementById('sim-reconnect-banner');
+      const badge = document.getElementById('sim-network-badge');
+
+      if (state.isReconnecting) {
+        banner.classList.remove('hidden');
+        badge.innerText = "LTE -> WiFi";
+        badge.className = "text-[10px] px-1 rounded bg-amber-500/20 text-amber-400 font-mono";
+      } else {
+        banner.classList.add('hidden');
+        badge.innerText = "5G";
+        badge.className = "text-[10px] px-1 rounded bg-emerald-500/20 text-emerald-400 font-mono";
+      }
+    }
+
+    function handleSendChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const container = document.getElementById('chat-messages-container');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start gap-2 flex-row-reverse animate-fade-in";
+      msgDiv.innerHTML = `
+        <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs shrink-0">🎮</div>
+        <div class="flex-1 text-right">
+          <div class="flex items-baseline gap-1.5 justify-end">
+            <span class="text-[10px] text-neutral-500">Just now</span>
+            <span class="text-xs font-bold text-indigo-400">You</span>
+          </div>
+          <div class="text-xs text-white mt-0.5 bg-indigo-600 p-2 rounded-xl rounded-tr-none inline-block text-left shadow-sm">
+            ${msg}
+          </div>
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+      input.value = "";
+    }
+
+    function simulateIncomingChat() {
+      const container = document.getElementById('chat-messages-container');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = "flex items-start gap-2 animate-fade-in";
+      msgDiv.innerHTML = `
+        <div class="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0">🐺</div>
+        <div class="flex-1">
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-xs font-bold text-emerald-400">ShadowGamer</span>
+            <span class="text-[10px] text-neutral-500">Just now</span>
+          </div>
+          <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
+            Enemy squad spotted pushing from the river!
+          </div>
+        </div>
+      `;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+      if (state.currentScreen !== 'chat') {
+        navigateTo('chat');
+      }
+    }
+
+    function selectAvatar(btn, emoji) {
+      document.querySelectorAll('.avatar-opt').forEach(b => {
+        b.className = "avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm";
+      });
+      btn.className = "avatar-opt w-9 h-9 rounded-xl bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center text-sm";
+    }
+
+    function selectServer(name) {
+      document.getElementById('server-title').innerText = name;
+    }
+  </script>
+</body>
+</html>
