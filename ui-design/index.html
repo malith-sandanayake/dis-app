@@ -3,851 +3,771 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GameVoice UI/UX Prototype & Component Reference</title>
+  <title>GameVoice — Apple-Inspired UI/UX Reference</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    /* Custom scrollbars */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Speaking Pulse Animation */
-    @keyframes pulse-ring {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-    .speaking-glow {
-      animation: pulse-ring 1.8s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    /* Apple San Francisco Typography Stack */
+    body, button, input, select, textarea {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Floating drag simulation */
-    .floating-hud {
-      transition: transform 0.15s ease-out;
+    /* Hide scrollbars elegantly */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Apple-style smooth glass blur */
+    .apple-glass {
+      background: rgba(28, 28, 30, 0.72);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .apple-glass-card {
+      background: rgba(36, 36, 39, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+    .apple-glass-pill {
+      background: rgba(44, 44, 46, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Apple Active Speaker Breathing Aura */
+    @keyframes apple-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(52, 199, 89, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(52, 199, 89, 0); }
+    }
+    .speaking-aura {
+      animation: apple-pulse 2.2s infinite cubic-bezier(0.16, 1, 0.3, 1);
     }
   </style>
 </head>
-<body class="bg-[#0b0c10] text-[#e2e8f0] antialiased min-h-screen p-3 md:p-6">
+<body class="bg-[#050507] text-[#f5f5f7] antialiased min-h-screen p-4 md:p-8 selection:bg-blue-500/30">
 
-  <!-- Top Navigation Bar -->
-  <header class="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-600/30">
-        G
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5 border-b border-white/[0.07] pb-6">
+    <div class="flex items-center gap-3.5">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-b from-[#2c2c2e] to-[#1c1c1e] border border-white/10 flex items-center justify-center shadow-lg shadow-black/40">
+        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-lg font-bold text-white tracking-tight">GameVoice Mobile UI Architecture</h1>
-          <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-mono">Jetpack Compose Spec</span>
+          <h1 class="text-xl font-semibold tracking-tight text-white">GameVoice</h1>
+          <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-white/[0.08] text-neutral-300 border border-white/10 font-medium tracking-wide">
+            Human Interface Design
+          </span>
         </div>
-        <p class="text-xs text-neutral-400">Component breakdown & interactive mobile UX prototype for developer reference</p>
+        <p class="text-xs text-neutral-400 mt-0.5 font-normal tracking-normal">
+          Apple-inspired minimalist mobile experience — refined typography, frosted glass materials, and in-game Live Activity overlay.
+        </p>
       </div>
     </div>
 
-    <!-- Mode Switch: Full App Simulator vs Component Catalog -->
-    <div class="flex items-center gap-2 p-1 bg-neutral-900 border border-neutral-800 rounded-xl">
-      <button onclick="setViewMode('simulator')" id="btn-mode-sim" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all">
-        📱 App Simulator
+    <!-- Segmented Control Bar (Apple-style pill selector) -->
+    <div class="inline-flex p-1 rounded-full bg-[#1c1c1e] border border-white/[0.08] shadow-inner self-start md:self-auto">
+      <button onclick="setViewMode('simulator')" id="btn-mode-sim" class="px-4 py-1.5 text-xs font-medium rounded-full bg-[#3a3a3c] text-white shadow-sm transition-all duration-200">
+        Simulator
       </button>
-      <button onclick="setViewMode('components')" id="btn-mode-comp" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all">
-        🧩 Component Breakdown
+      <button onclick="setViewMode('components')" id="btn-mode-comp" class="px-4 py-1.5 text-xs font-medium rounded-full text-neutral-400 hover:text-white transition-all duration-200">
+        Components
       </button>
-      <button onclick="setViewMode('tokens')" id="btn-mode-tokens" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all">
-        🎨 Design Tokens
+      <button onclick="setViewMode('tokens')" id="btn-mode-tokens" class="px-4 py-1.5 text-xs font-medium rounded-full text-neutral-400 hover:text-white transition-all duration-200">
+        Design Tokens
       </button>
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- VIEW 1: APP SIMULATOR (Live Interactive Phone View)      -->
+  <!-- VIEW 1: APP SIMULATOR (Live Apple Mobile Experience)     -->
   <!-- ======================================================== -->
-  <main id="view-simulator" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <main id="view-simulator" class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
     
-    <!-- Phone Mockup Container (Col 5) -->
+    <!-- Phone Mockup Container (5 cols) -->
     <div class="lg:col-span-5 flex flex-col items-center">
-      <!-- Screen Switcher Pills -->
-      <div class="w-[340px] mb-3 flex items-center justify-between bg-neutral-900/90 border border-neutral-800 p-1 rounded-xl">
-        <button onclick="navigateTo('auth')" id="nav-auth" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Auth</button>
-        <button onclick="navigateTo('channels')" id="nav-channels" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Hub</button>
-        <button onclick="navigateTo('chat')" id="nav-chat" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-600 text-white transition-colors">Chat</button>
-        <button onclick="navigateTo('voice')" id="nav-voice" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Voice</button>
-        <button onclick="navigateTo('overlay')" id="nav-overlay" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors">Overlay</button>
+      
+      <!-- Top Screen Flow Segmented Indicator -->
+      <div class="w-[340px] mb-4 flex items-center justify-between p-1 rounded-2xl bg-[#1c1c1e]/90 border border-white/[0.08]">
+        <button onclick="navigateTo('auth')" id="nav-auth" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-xl text-neutral-400 hover:text-white transition-all">Sign In</button>
+        <button onclick="navigateTo('channels')" id="nav-channels" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-xl text-neutral-400 hover:text-white transition-all">Groups</button>
+        <button onclick="navigateTo('chat')" id="nav-chat" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-xl bg-white/15 text-white shadow-sm transition-all">Messages</button>
+        <button onclick="navigateTo('voice')" id="nav-voice" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-xl text-neutral-400 hover:text-white transition-all">FaceTime Voice</button>
+        <button onclick="navigateTo('overlay')" id="nav-overlay" class="nav-btn px-2.5 py-1 text-xs font-medium rounded-xl text-neutral-400 hover:text-white transition-all">Overlay</button>
       </div>
 
-      <!-- Phone Chassis -->
-      <div class="relative w-[340px] h-[690px] bg-neutral-950 rounded-[44px] p-3 shadow-2xl border-4 border-neutral-800 ring-1 ring-white/10 flex flex-col overflow-hidden">
-        <!-- Inner Touch Display Area (Modern Notchless Screen) -->
-        <div class="relative w-full h-full bg-[#101116] text-white rounded-[34px] overflow-hidden flex flex-col pt-2 select-none">
+      <!-- iPhone / Premium Bezel Chassis -->
+      <div class="relative w-[342px] h-[700px] bg-[#000000] rounded-[52px] p-3 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border-[5px] border-[#2c2c2e] ring-1 ring-white/10 flex flex-col overflow-hidden">
+        
+        <!-- Screen Content Area (Notchless Edge-to-Edge OLED Display) -->
+        <div class="relative w-full h-full bg-[#000000] text-white rounded-[42px] overflow-hidden flex flex-col select-none">
           
-          <!-- System Status Bar -->
-          <div class="h-6 px-5 flex items-center justify-between text-xs text-neutral-400 font-medium shrink-0">
-            <span id="phone-clock">20:45</span>
-            <div class="flex items-center gap-1.5">
-              <span id="sim-network-badge" class="text-[10px] px-1 rounded bg-emerald-500/20 text-emerald-400 font-mono">5G</span>
-              <svg class="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.5-.47 2.89-1.28 4.04L12 19.34l-5.72-3.3C5.47 14.89 5 13.5 5 12c0-3.87 3.13-7 7-7z"/></svg>
-              <svg class="w-3.5 h-3.5 text-neutral-400" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
-            </div>
-          </div>
-
-          <!-- Reconnect Catch-up Toast Banner -->
-          <div id="sim-reconnect-banner" class="hidden mx-2 mt-1 py-1 px-2.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs flex items-center justify-between z-40">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-              <span>Reconnecting to Wi-Fi...</span>
-            </div>
-            <span class="text-[10px] font-mono">Resuming ID #492</span>
-          </div>
-
-          <!-- SCREEN: AUTH -->
-          <div id="screen-auth" class="screen-panel hidden flex-1 p-5 flex flex-col justify-between">
-            <div class="space-y-4 pt-3">
-              <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-600/30">
-                G
+          <!-- Sleek Apple Status Bar (Notchless, Clean & Minimal) -->
+          <div class="h-9 px-6 flex items-center justify-between text-xs font-medium tracking-tight text-white/90 shrink-0 pt-1">
+            <span id="phone-clock" class="text-[13px] font-semibold tracking-tight">9:41</span>
+            <div class="flex items-center gap-2">
+              <span id="sim-network-badge" class="text-[10px] tracking-wider font-semibold text-white/70">5G</span>
+              <!-- Wi-Fi Icon -->
+              <svg class="w-3.5 h-3.5 text-white/90" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.5 0 6.69 1.41 9.02 3.69L12 19.31 2.98 11.19C5.31 8.91 8.5 7.5 12 7.5z"/>
+              </svg>
+              <!-- Apple Battery Pill -->
+              <div class="w-5 h-2.5 rounded-[4px] border border-white/80 p-0.5 flex items-center">
+                <div class="h-full w-3.5 bg-white rounded-[2px]"></div>
               </div>
+            </div>
+          </div>
+
+          <!-- Reconnection Live Banner (iOS Notification Style) -->
+          <div id="sim-reconnect-banner" class="hidden mx-3 mt-1.5 py-1.5 px-3 rounded-2xl apple-glass text-neutral-200 text-xs flex items-center justify-between shadow-lg z-40">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span class="text-[11px] font-medium tracking-tight">Connecting to Wi-Fi</span>
+            </div>
+            <span class="text-[10px] text-neutral-400 font-mono">Sync #492</span>
+          </div>
+
+          <!-- ================= SCREEN 1: AUTH ================= -->
+          <div id="screen-auth" class="screen-panel hidden flex-1 p-6 flex flex-col justify-between">
+            <div class="space-y-6 pt-4">
+              <div class="w-14 h-14 rounded-3xl bg-gradient-to-tr from-[#007AFF] to-[#5856D6] flex items-center justify-center shadow-xl shadow-blue-500/25">
+                <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9c.83 0 1.5-.67 1.5-1.5S7.83 8 7 8s-1.5.67-1.5 1.5S6.17 11 7 11zm10 0c.83 0 1.5-.67 1.5-1.5S17.83 8 17 8s-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-5 6c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                </svg>
+              </div>
+
               <div>
-                <h2 class="text-lg font-bold text-white tracking-tight">Create Squad Account</h2>
-                <p class="text-xs text-neutral-400 mt-0.5">Quick setup. No email verification required.</p>
+                <h2 class="text-2xl font-semibold tracking-tight text-white">Sign In</h2>
+                <p class="text-xs text-neutral-400 mt-1 font-normal leading-relaxed">
+                  Join your gaming squad in seconds with your handle.
+                </p>
               </div>
 
-              <div class="space-y-3 pt-1">
-                <div>
-                  <label class="text-xs text-neutral-400 font-medium block mb-1">Gamer Handle</label>
-                  <input id="input-username" type="text" value="ApexShooter99" class="w-full bg-[#181920] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+              <!-- iOS Inset Grouped Fields -->
+              <div class="space-y-3">
+                <div class="rounded-2xl bg-[#1c1c1e] border border-white/[0.08] overflow-hidden divide-y divide-white/[0.06]">
+                  <div class="px-3.5 py-3 flex items-center justify-between">
+                    <span class="text-xs text-neutral-400 font-medium">Handle</span>
+                    <input type="text" value="ApexShooter99" class="text-right text-xs text-white font-medium bg-transparent focus:outline-none w-36">
+                  </div>
+                  <div class="px-3.5 py-3 flex items-center justify-between">
+                    <span class="text-xs text-neutral-400 font-medium">Passcode</span>
+                    <input type="password" value="••••••••••••" class="text-right text-xs text-white font-medium bg-transparent focus:outline-none w-36">
+                  </div>
                 </div>
-                <div>
-                  <label class="text-xs text-neutral-400 font-medium block mb-1">Password</label>
-                  <input type="password" value="secretpassword" class="w-full bg-[#181920] border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                  <label class="text-xs text-neutral-400 font-medium block mb-1.5">Pick Avatar</label>
-                  <div class="flex gap-2">
-                    <button onclick="selectAvatar(this, '🎮')" class="avatar-opt w-9 h-9 rounded-xl bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center text-sm">🎮</button>
-                    <button onclick="selectAvatar(this, '🐺')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">🐺</button>
-                    <button onclick="selectAvatar(this, '⚡')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">⚡</button>
-                    <button onclick="selectAvatar(this, '🎯')" class="avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm">🎯</button>
+
+                <div class="pt-1">
+                  <span class="text-[11px] font-medium text-neutral-400 uppercase tracking-wider block mb-2 px-1">Avatar</span>
+                  <div class="flex items-center gap-2.5">
+                    <button onclick="selectAvatar(this)" class="avatar-opt w-10 h-10 rounded-2xl bg-[#007AFF]/20 border border-[#007AFF] flex items-center justify-center text-base shadow-sm">🎮</button>
+                    <button onclick="selectAvatar(this)" class="avatar-opt w-10 h-10 rounded-2xl bg-[#1c1c1e] border border-white/[0.08] flex items-center justify-center text-base">🐺</button>
+                    <button onclick="selectAvatar(this)" class="avatar-opt w-10 h-10 rounded-2xl bg-[#1c1c1e] border border-white/[0.08] flex items-center justify-center text-base">⚡</button>
+                    <button onclick="selectAvatar(this)" class="avatar-opt w-10 h-10 rounded-2xl bg-[#1c1c1e] border border-white/[0.08] flex items-center justify-center text-base">🎯</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="space-y-2 pb-3">
-              <button onclick="navigateTo('channels')" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all">
-                Enter App
+            <div class="space-y-3 pb-2">
+              <button onclick="navigateTo('channels')" class="w-full py-3.5 bg-[#007AFF] hover:bg-[#0069d9] active:scale-[0.98] text-white rounded-2xl text-xs font-semibold tracking-tight shadow-lg shadow-blue-500/20 transition-all duration-150">
+                Continue to Squad
               </button>
-              <div class="text-center text-[11px] text-neutral-500">Component: <code class="font-mono text-neutral-400">AuthScreen</code></div>
+              <p class="text-center text-[11px] text-neutral-500 font-normal">No email verification required for MVP</p>
             </div>
           </div>
 
-          <!-- SCREEN: HUB / CHANNELS -->
-          <div id="screen-channels" class="screen-panel hidden flex-1 flex overflow-hidden">
-            <!-- Left Server Rail -->
-            <div class="w-14 bg-[#0a0b0e] flex flex-col items-center py-3 gap-2.5 border-r border-neutral-800/80">
-              <div class="relative group cursor-pointer" onclick="selectServer('Apex Squad')">
-                <div class="absolute -left-3 top-2 w-1 h-6 bg-indigo-500 rounded-r-full"></div>
-                <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow-md">
-                  APX
-                </div>
-              </div>
-              <div class="w-10 h-10 rounded-2xl bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-xs font-medium text-neutral-300 cursor-pointer" onclick="selectServer('PUBG Elite')">
-                PUB
-              </div>
-              <div class="w-10 h-10 rounded-2xl border border-dashed border-neutral-700 hover:border-neutral-500 flex items-center justify-center text-xs text-neutral-400 cursor-pointer">
-                +
-              </div>
-            </div>
-
-            <!-- Right Channels List -->
-            <div class="flex-1 bg-[#12131a] flex flex-col">
-              <!-- Group Header with Back Button to Auth / Account Switch -->
-              <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
-                <div class="flex items-center gap-1.5">
-                  <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Back to Auth / Switch Account">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                  </button>
-                  <span class="font-bold text-xs tracking-wide text-neutral-100" id="server-title">Apex Squad</span>
-                </div>
-                <span class="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700">Code: 8492</span>
-              </div>
-
-              <!-- Channel List Scroll Area -->
-              <div class="flex-1 p-2 space-y-4 overflow-y-auto no-scrollbar">
-                <!-- Text Channels -->
-                <div>
-                  <div class="px-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">Text Channels</div>
-                  <div class="space-y-1">
-                    <div onclick="navigateTo('chat')" class="flex items-center justify-between px-2.5 py-2 rounded-lg bg-neutral-800/60 text-white font-medium text-xs cursor-pointer hover:bg-neutral-800">
-                      <div class="flex items-center gap-1.5">
-                        <span class="text-neutral-400 font-bold">#</span>
-                        <span>match-tactics</span>
-                      </div>
-                      <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-                    </div>
-                    <div class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-neutral-400 hover:bg-neutral-800/40 text-xs cursor-pointer">
-                      <span class="text-neutral-500 font-bold">#</span>
-                      <span>clips-and-brags</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Voice Channels -->
-                <div>
-                  <div class="px-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">Voice Channels</div>
-                  <div class="space-y-1">
-                    <!-- Active voice channel card with attendees -->
-                    <div onclick="navigateTo('voice')" class="p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 cursor-pointer hover:border-indigo-500/60 transition-all">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-1.5">
-                          <span class="text-emerald-400 text-xs">🔊</span>
-                          <span class="text-xs font-semibold text-white">Ranked Room A</span>
-                        </div>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-semibold">3 Active</span>
-                      </div>
-                      
-                      <!-- Mini Live Speaker Preview -->
-                      <div class="mt-2 pl-4 space-y-1 border-l-2 border-indigo-500/30">
-                        <div class="flex items-center gap-1.5 text-xs text-neutral-200">
-                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                          <span class="text-emerald-300 font-medium">ShadowGamer</span>
-                          <span class="text-[10px] text-neutral-400">(talking)</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 text-xs text-neutral-400">
-                          <span class="w-2 h-2 rounded-full bg-neutral-600"></span>
-                          <span>Krypton</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-neutral-400 hover:bg-neutral-800/40 text-xs cursor-pointer">
-                      <span class="text-neutral-500 text-xs">🔊</span>
-                      <span>Lobby 2</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- User Bottom Bar -->
-              <div class="p-2 border-t border-neutral-800 bg-[#0e0f14] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs">🎮</div>
-                  <div>
-                    <div class="text-xs font-semibold text-neutral-200 leading-none">ApexShooter99</div>
-                    <div class="text-[10px] text-emerald-400 leading-tight">Online</div>
-                  </div>
-                </div>
-                <button onclick="toggleGlobalMute()" id="btn-dock-mute" class="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+          <!-- ================= SCREEN 2: GROUPS & CHANNELS ================= -->
+          <div id="screen-channels" class="screen-panel hidden flex-1 flex flex-col bg-[#000000]">
+            <!-- Apple-style Navigation Bar -->
+            <div class="h-12 px-4 flex items-center justify-between border-b border-white/[0.06] shrink-0 bg-[#161618]/60 backdrop-blur-md">
+              <div class="flex items-center gap-2">
+                <button onclick="goBack()" class="text-[#007AFF] hover:opacity-80 p-1 -ml-1 transition-opacity flex items-center gap-0.5 text-xs font-medium">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                  <span>Sign Out</span>
                 </button>
               </div>
+              <span class="text-xs font-semibold text-white tracking-tight" id="server-title">Apex Squad</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.08] text-neutral-300">#8492</span>
+            </div>
+
+            <!-- Main Inset Content -->
+            <div class="flex-1 p-3.5 space-y-4 overflow-y-auto no-scrollbar">
+              
+              <!-- Channels List: Grouped Inset Card -->
+              <div>
+                <div class="text-[11px] font-medium text-neutral-400 uppercase tracking-wider px-2 mb-1.5">Voice Channels</div>
+                <div class="rounded-2xl bg-[#1c1c1e] border border-white/[0.08] overflow-hidden divide-y divide-white/[0.06]">
+                  
+                  <!-- Active Voice Channel Row -->
+                  <div onclick="navigateTo('voice')" class="p-3 hover:bg-white/[0.03] transition-colors cursor-pointer">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-sm">
+                          🔊
+                        </div>
+                        <div>
+                          <div class="text-xs font-semibold text-white tracking-tight">Ranked Lobby A</div>
+                          <div class="text-[10px] text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>ShadowGamer speaking</span>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        3 in call
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Inactive Voice Channel Row -->
+                  <div class="p-3 hover:bg-white/[0.03] transition-colors cursor-pointer flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-8 h-8 rounded-xl bg-white/[0.05] text-neutral-400 flex items-center justify-center text-sm">
+                        🔊
+                      </div>
+                      <div>
+                        <div class="text-xs font-medium text-neutral-300">Casual Room</div>
+                        <div class="text-[10px] text-neutral-500">Empty</div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-neutral-500">›</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Text Channels -->
+              <div>
+                <div class="text-[11px] font-medium text-neutral-400 uppercase tracking-wider px-2 mb-1.5">Text Channels</div>
+                <div class="rounded-2xl bg-[#1c1c1e] border border-white/[0.08] overflow-hidden divide-y divide-white/[0.06]">
+                  <div onclick="navigateTo('chat')" class="p-3 hover:bg-white/[0.03] transition-colors cursor-pointer flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                      <span class="text-sm font-bold text-neutral-400">#</span>
+                      <span class="text-xs font-semibold text-white tracking-tight">match-tactics</span>
+                    </div>
+                    <span class="w-2 h-2 rounded-full bg-[#007AFF]"></span>
+                  </div>
+                  <div class="p-3 hover:bg-white/[0.03] transition-colors cursor-pointer flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                      <span class="text-sm font-bold text-neutral-500">#</span>
+                      <span class="text-xs font-medium text-neutral-400">general-clips</span>
+                    </div>
+                    <span class="text-xs text-neutral-600">›</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Apple User Dock Strip -->
+            <div class="p-3 border-t border-white/[0.06] bg-[#161618]/80 backdrop-blur-md flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#007AFF] to-[#5856D6] flex items-center justify-center text-sm shadow-sm">
+                  🎮
+                </div>
+                <div>
+                  <div class="text-xs font-semibold text-white tracking-tight">ApexShooter99</div>
+                  <div class="text-[10px] text-emerald-400 font-medium">Online</div>
+                </div>
+              </div>
+              <button onclick="toggleVoiceMute()" class="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.12] flex items-center justify-center text-neutral-300 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+              </button>
             </div>
           </div>
 
-          <!-- SCREEN: TEXT CHAT -->
-          <div id="screen-chat" class="screen-panel flex-1 flex flex-col bg-[#12131a]">
-            <!-- Header with Quick Join Call & Functional Back -->
-            <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between bg-[#0e0f14]">
+          <!-- ================= SCREEN 3: MESSAGES (iMessage Elegance) ================= -->
+          <div id="screen-chat" class="screen-panel flex-1 flex flex-col bg-[#000000]">
+            <!-- Frosted Header Bar -->
+            <div class="h-12 px-4 border-b border-white/[0.06] flex items-center justify-between bg-[#161618]/70 backdrop-blur-md shrink-0">
               <div class="flex items-center gap-1.5">
-                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Back to Channels">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                <button onclick="goBack()" class="text-[#007AFF] hover:opacity-80 p-1 -ml-1 transition-opacity flex items-center text-xs font-medium">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <span class="text-neutral-400 font-bold text-xs">#</span>
-                <span class="font-bold text-xs text-white">match-tactics</span>
+                <div>
+                  <div class="text-xs font-semibold text-white tracking-tight"># match-tactics</div>
+                  <div class="text-[10px] text-neutral-400">12 members</div>
+                </div>
               </div>
-              <button onclick="navigateTo('voice')" class="px-2 py-0.8 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-medium flex items-center gap-1 hover:bg-emerald-500/30 transition-colors">
-                <span>🔊 In Call (3)</span>
+              
+              <!-- Quick Join FaceTime Call Pill -->
+              <button onclick="navigateTo('voice')" class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold flex items-center gap-1.5 hover:bg-emerald-500/25 active:scale-95 transition-all">
+                <span>Join Call</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               </button>
             </div>
 
-            <!-- Messages Stream -->
-            <div id="chat-messages-container" class="flex-1 p-3 space-y-3 overflow-y-auto no-scrollbar">
-              <div class="text-center my-0.5">
-                <span class="px-2 py-0.5 rounded-full bg-neutral-800/80 text-[10px] text-neutral-400 border border-neutral-700/50">
-                  ⚡ 50 messages restored from local SQLite cache
+            <!-- Messages Scroll Stream -->
+            <div id="chat-messages-container" class="flex-1 p-3.5 space-y-3 overflow-y-auto no-scrollbar">
+              <div class="text-center my-1">
+                <span class="px-3 py-1 rounded-full bg-white/[0.06] text-[10px] text-neutral-400 font-medium">
+                  Today 9:38 AM • SQLite Local Cache
                 </span>
               </div>
 
-              <!-- Message 1 -->
-              <div class="flex items-start gap-2">
-                <div class="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0">🐺</div>
-                <div class="flex-1">
-                  <div class="flex items-baseline gap-1.5">
-                    <span class="text-xs font-bold text-emerald-400">ShadowGamer</span>
-                    <span class="text-[10px] text-neutral-500">20:38</span>
-                  </div>
-                  <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
-                    East bunker zone is clear. Grab heavy ammo there.
+              <!-- Message 1 (Teammate) -->
+              <div class="flex items-end gap-2 max-w-[85%]">
+                <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0 mb-0.5">🐺</div>
+                <div>
+                  <div class="text-[10px] font-medium text-neutral-400 mb-0.5 ml-1">ShadowGamer</div>
+                  <div class="bg-[#2c2c2e] text-white text-xs px-3.5 py-2.5 rounded-2xl rounded-bl-sm font-normal leading-relaxed">
+                    East bunker is safe. Grab shields and heavy ammo now.
                   </div>
                 </div>
               </div>
 
-              <!-- Message 2 -->
-              <div class="flex items-start gap-2">
-                <div class="w-7 h-7 rounded-lg bg-cyan-600/30 border border-cyan-500/40 flex items-center justify-center text-xs shrink-0">⚡</div>
-                <div class="flex-1">
-                  <div class="flex items-baseline gap-1.5">
-                    <span class="text-xs font-bold text-cyan-400">Krypton</span>
-                    <span class="text-[10px] text-neutral-500">20:41</span>
-                  </div>
-                  <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
-                    Roger. Setting fences now.
+              <!-- Message 2 (Teammate) -->
+              <div class="flex items-end gap-2 max-w-[85%]">
+                <div class="w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs shrink-0 mb-0.5">⚡</div>
+                <div>
+                  <div class="text-[10px] font-medium text-neutral-400 mb-0.5 ml-1">Krypton</div>
+                  <div class="bg-[#2c2c2e] text-white text-xs px-3.5 py-2.5 rounded-2xl rounded-bl-sm font-normal leading-relaxed">
+                    Locked down the east doors with perimeter fences.
                   </div>
                 </div>
               </div>
 
-              <!-- Message 3 (User) -->
-              <div class="flex items-start gap-2 flex-row-reverse">
-                <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs shrink-0">🎮</div>
-                <div class="flex-1 text-right">
-                  <div class="flex items-baseline gap-1.5 justify-end">
-                    <span class="text-[10px] text-neutral-500">20:42</span>
-                    <span class="text-xs font-bold text-indigo-400">You</span>
-                  </div>
-                  <div class="text-xs text-white mt-0.5 bg-indigo-600 p-2 rounded-xl rounded-tr-none inline-block text-left shadow-sm">
-                    In the match! Switching voice to background.
+              <!-- Message 3 (Self - iOS Vibrant Blue Bubble) -->
+              <div class="flex items-end gap-2 max-w-[85%] ml-auto flex-row-reverse">
+                <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white shrink-0 mb-0.5">🎮</div>
+                <div class="text-right">
+                  <div class="text-[10px] font-medium text-neutral-400 mb-0.5 mr-1">You</div>
+                  <div class="bg-[#007AFF] text-white text-xs px-3.5 py-2.5 rounded-2xl rounded-br-sm font-normal leading-relaxed shadow-sm">
+                    In the match. Switching voice call to background!
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Chat Input Dock -->
-            <form onsubmit="handleSendChat(event)" class="p-2 bg-[#0e0f14] border-t border-neutral-800 flex items-center gap-1.5">
-              <input id="chat-input" type="text" placeholder="Message #match-tactics..." class="flex-1 bg-[#1a1b24] border border-neutral-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500">
-              <button type="submit" class="w-8 h-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-md">
-                <svg class="w-3.5 h-3.5 rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            <!-- Apple-Style Rounded Input Dock -->
+            <form onsubmit="handleSendChat(event)" class="p-2.5 bg-[#161618]/70 backdrop-blur-md border-t border-white/[0.06] flex items-center gap-2 shrink-0">
+              <input id="chat-input" type="text" placeholder="iMessage" class="flex-1 bg-[#1c1c1e] border border-white/[0.08] rounded-full px-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#007AFF] transition-colors">
+              <button type="submit" class="w-8 h-8 rounded-full bg-[#007AFF] hover:bg-[#0069d9] active:scale-95 flex items-center justify-center text-white shrink-0 shadow-sm transition-transform">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
               </button>
             </form>
           </div>
 
-          <!-- SCREEN: VOICE ROOM -->
-          <div id="screen-voice" class="screen-panel hidden flex-1 flex flex-col bg-[#0b0c10]">
-            <!-- Voice Room Header with Functional Minimize & Back -->
-            <div class="h-11 px-3 border-b border-neutral-800 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 -ml-1 rounded transition-colors" title="Minimize Call / Back">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div>
-                  <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Ranked Room A</span>
-                  </div>
-                  <div class="text-[10px] text-neutral-400">Opus 24kbps • DTX Active • RT 18ms</div>
-                </div>
+          <!-- ================= SCREEN 4: FACETIME-STYLE VOICE ROOM ================= -->
+          <div id="screen-voice" class="screen-panel hidden flex-1 flex flex-col bg-[#000000]">
+            <!-- Top Minimize Bar -->
+            <div class="h-12 px-4 flex items-center justify-between border-b border-white/[0.06] shrink-0">
+              <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded-full transition-colors flex items-center gap-1 text-xs font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                <span>Back</span>
+              </button>
+              <div class="text-center">
+                <div class="text-xs font-semibold text-white tracking-tight">Ranked Lobby A</div>
+                <div class="text-[10px] text-emerald-400 font-medium">Opus 24kbps • DTX Active</div>
               </div>
-              <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded transition-colors" title="Close Sheet">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              <button onclick="goBack()" class="w-7 h-7 rounded-full bg-white/[0.08] flex items-center justify-center text-neutral-400 hover:text-white transition-colors">
+                ✕
               </button>
             </div>
 
-            <!-- Participants Grid -->
-            <div class="flex-1 p-3 grid grid-cols-2 gap-2.5 overflow-y-auto no-scrollbar content-start">
-              <!-- Tile 1: Active Speaker -->
-              <div id="voice-tile-shadow" class="bg-[#14161f] border-2 border-emerald-500 rounded-2xl p-3 flex flex-col items-center justify-center relative speaking-glow">
-                <div class="w-11 h-11 rounded-2xl bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-xl mb-1">
+            <!-- FaceTime Style Rounded Participant Grid -->
+            <div class="flex-1 p-3.5 grid grid-cols-2 gap-3 overflow-y-auto no-scrollbar content-start">
+              
+              <!-- Tile 1: Active Speaker with Apple Emerald Ring -->
+              <div id="voice-tile-shadow" class="apple-glass-card rounded-3xl p-4 flex flex-col items-center justify-center relative speaking-aura border border-emerald-500/50">
+                <div class="w-13 h-13 w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20 mb-2">
                   🐺
                 </div>
-                <span class="text-xs font-bold text-white">ShadowGamer</span>
-                <span class="text-[10px] text-emerald-400 font-medium">Speaking...</span>
-                <span class="absolute top-2 right-2 text-xs">🔊</span>
+                <span class="text-xs font-semibold text-white tracking-tight">ShadowGamer</span>
+                <span class="text-[10px] text-emerald-400 font-medium mt-0.5">Speaking</span>
+                <span class="absolute top-3 right-3 text-xs">🔊</span>
               </div>
 
               <!-- Tile 2: Silent Teammate -->
-              <div class="bg-[#14161f] border border-neutral-800 rounded-2xl p-3 flex flex-col items-center justify-center relative">
-                <div class="w-11 h-11 rounded-2xl bg-cyan-600/30 border border-cyan-500/30 flex items-center justify-center text-xl mb-1">
+              <div class="apple-glass-card rounded-3xl p-4 flex flex-col items-center justify-center relative">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center text-2xl shadow-sm mb-2">
                   ⚡
                 </div>
-                <span class="text-xs font-bold text-white">Krypton</span>
-                <span class="text-[10px] text-neutral-500">Silent</span>
+                <span class="text-xs font-semibold text-white tracking-tight">Krypton</span>
+                <span class="text-[10px] text-neutral-500 font-medium mt-0.5">Silent</span>
               </div>
 
-              <!-- Tile 3: Self -->
-              <div class="bg-[#14161f] border border-indigo-500/40 rounded-2xl p-3 flex flex-col items-center justify-center relative col-span-2">
-                <div class="w-11 h-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-xl mb-1">
+              <!-- Tile 3: Self Tile (Span 2) -->
+              <div class="apple-glass-card rounded-3xl p-4 flex flex-col items-center justify-center relative col-span-2">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-blue-600 flex items-center justify-center text-2xl shadow-md mb-2">
                   🎮
                 </div>
-                <span class="text-xs font-bold text-white">ApexShooter99 (You)</span>
-                <div class="flex items-center gap-1.5 mt-1">
-                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-300 border border-neutral-700">Voice Activity Mode</span>
-                  <span id="label-audio-route" class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700">Bluetooth Out</span>
+                <span class="text-xs font-semibold text-white tracking-tight">ApexShooter99 (You)</span>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-white/[0.08] text-neutral-300 font-medium">Voice Activity</span>
+                  <span id="label-audio-route" class="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 font-medium">AirPods Pro</span>
                 </div>
               </div>
             </div>
 
-            <!-- Voice Controls Sheet -->
-            <div class="p-3 bg-[#111218] border-t border-neutral-800 rounded-t-2xl space-y-2.5">
-              <div class="flex items-center justify-around">
+            <!-- Apple-Style Floating Circular Call Controls -->
+            <div class="p-4 bg-[#1c1c1e]/80 backdrop-blur-xl border-t border-white/[0.08] rounded-t-[32px] space-y-3 shrink-0">
+              <div class="flex items-center justify-around px-2">
+                
                 <!-- Mute Button -->
-                <button onclick="toggleVoiceMute()" id="btn-voice-mute" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
-                  <svg id="icon-voice-mic" class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
-                  <span id="label-voice-mute" class="text-[9px] mt-0.5">Mute</span>
+                <button onclick="toggleVoiceMute()" id="btn-voice-mute" class="w-12 h-12 rounded-full bg-white/[0.1] hover:bg-white/[0.16] active:scale-95 flex flex-col items-center justify-center text-white transition-all">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                  <span id="label-voice-mute" class="text-[9px] font-medium mt-0.5">Mute</span>
                 </button>
+
                 <!-- Deafen Button -->
-                <button onclick="toggleDeafen()" id="btn-voice-deafen" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
-                  <svg class="w-4 h-4 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-                  <span id="label-voice-deafen" class="text-[9px] mt-0.5">Deafen</span>
+                <button onclick="toggleDeafen()" id="btn-voice-deafen" class="w-12 h-12 rounded-full bg-white/[0.1] hover:bg-white/[0.16] active:scale-95 flex flex-col items-center justify-center text-white transition-all">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                  <span id="label-voice-deafen" class="text-[9px] font-medium mt-0.5">Deafen</span>
                 </button>
-                <!-- Route Switcher -->
-                <button onclick="cycleAudioRoute()" class="w-11 h-11 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 flex flex-col items-center justify-center text-white transition-all">
-                  <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 24 24"><path d="M14.88 16.29L13 18.17V14.41l1.88 1.88M13 5.83l1.88 1.88L13 9.59V5.83M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29z"/></svg>
-                  <span id="label-btn-route" class="text-[9px] mt-0.5 text-cyan-400">BT Audio</span>
+
+                <!-- Audio Route (AirPlay / Speaker) -->
+                <button onclick="cycleAudioRoute()" class="w-12 h-12 rounded-full bg-white/[0.1] hover:bg-white/[0.16] active:scale-95 flex flex-col items-center justify-center text-white transition-all">
+                  <svg class="w-5 h-5 text-[#007AFF]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+                  <span id="label-btn-route" class="text-[9px] font-medium mt-0.5 text-[#007AFF]">AirPods</span>
                 </button>
-                <!-- Disconnect -->
-                <button onclick="leaveCall()" class="w-11 h-11 rounded-xl bg-rose-600 hover:bg-rose-500 flex flex-col items-center justify-center text-white shadow-lg shadow-rose-600/30 transition-all">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"/></svg>
-                  <span class="text-[9px] mt-0.5">Leave</span>
+
+                <!-- End Call (Apple Red) -->
+                <button onclick="leaveCall()" class="w-12 h-12 rounded-full bg-[#FF3B30] hover:bg-[#e0352b] active:scale-95 flex flex-col items-center justify-center text-white shadow-lg shadow-red-500/25 transition-transform">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z"/></svg>
+                  <span class="text-[9px] font-medium mt-0.5">End</span>
                 </button>
               </div>
 
-              <button onclick="navigateTo('overlay')" class="w-full py-2 bg-neutral-800 hover:bg-neutral-750 text-neutral-300 rounded-xl text-xs font-medium border border-neutral-700 flex items-center justify-center gap-1.5">
-                <span>📱 Simulate Game Overlay</span>
+              <button onclick="navigateTo('overlay')" class="w-full py-2.5 rounded-2xl bg-white/[0.08] hover:bg-white/[0.12] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors">
+                <span>View Live Activity Game Overlay</span>
               </button>
             </div>
           </div>
 
-          <!-- SCREEN: IN-GAME OVERLAY SIMULATION -->
+          <!-- ================= SCREEN 5: APPLE LIVE ACTIVITY IN-GAME HUD ================= -->
           <div id="screen-overlay" class="screen-panel hidden flex-1 flex flex-col relative bg-neutral-900 overflow-hidden">
-            <!-- Simulated 3D Mobile Game Background -->
-            <div class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-amber-950 flex flex-col items-center justify-center text-center p-4">
-              <div class="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl mb-2 shadow-xl shadow-amber-500/20">
+            <!-- Simulated In-Game Scene -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#12131C] via-[#090A0F] to-[#1F1424] flex flex-col items-center justify-center text-center p-6">
+              <div class="w-14 h-14 rounded-3xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-2xl mb-2 backdrop-blur-sm">
                 🎮
               </div>
-              <div class="text-xs font-black tracking-widest text-amber-300 uppercase">Battle Royale 3D</div>
-              <div class="text-[11px] text-neutral-400 mt-1 max-w-[200px]">Game in foreground. Audio focus shared concurrently.</div>
+              <div class="text-xs font-semibold tracking-wider text-white/90 uppercase">Active Gameplay</div>
+              <div class="text-[11px] text-neutral-400 mt-1 max-w-[210px] font-normal leading-relaxed">
+                Background voice engine streaming concurrently with zero audio stutter.
+              </div>
             </div>
 
-            <!-- Android Persistent Notification Banner (Foreground Service) with Back CTA -->
-            <div class="relative z-10 m-2 p-2 rounded-xl bg-neutral-900/90 backdrop-blur border border-neutral-700 text-white shadow-xl flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded -ml-1 transition-colors" title="Back to GameVoice Call">
+            <!-- Apple Live Activity Banner (Foreground Notification) -->
+            <div class="relative z-10 m-3 p-3 rounded-[24px] apple-glass shadow-2xl flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <button onclick="goBack()" class="text-neutral-400 hover:text-white p-1 rounded-full -ml-1 transition-colors">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                 <div>
-                  <div class="text-[11px] font-semibold leading-tight">GameVoice Call Active</div>
-                  <div class="text-[10px] text-neutral-400">Ranked Room A (3 in call)</div>
+                  <div class="text-[11px] font-semibold text-white tracking-tight leading-tight">GameVoice Active</div>
+                  <div class="text-[10px] text-neutral-400 leading-tight">Ranked Lobby A • 3 connected</div>
                 </div>
               </div>
-              <span class="text-[10px] text-emerald-400 font-mono px-1.5 py-0.5 rounded bg-emerald-500/10">DTX ON</span>
+              <span class="text-[10px] font-semibold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                Live
+              </span>
             </div>
 
-            <!-- FLOATING IN-GAME MUTE OVERLAY (SYSTEM_ALERT_WINDOW) -->
-            <div id="floating-overlay-widget" class="absolute top-28 right-3 z-30 flex flex-col items-end gap-1.5 floating-hud cursor-grab active:cursor-grabbing">
-              <!-- Active Speaker Toast -->
-              <div id="hud-speaker-pill" class="bg-black/85 backdrop-blur-md border border-emerald-500/70 rounded-full px-2.5 py-0.8 flex items-center gap-1.5 shadow-2xl">
+            <!-- DRAGGABLE APPLE LIVE ACTIVITY FLOATING MUTE PILL -->
+            <div id="floating-overlay-widget" class="absolute top-28 right-3.5 z-30 flex flex-col items-end gap-2">
+              
+              <!-- Active Talker Waveform Pill -->
+              <div id="hud-speaker-pill" class="apple-glass-pill px-3 py-1.5 rounded-full flex items-center gap-2 shadow-2xl">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="text-[11px] text-white font-medium">ShadowGamer</span>
+                <span class="text-[11px] text-white font-medium tracking-tight">ShadowGamer</span>
               </div>
 
-              <!-- Main Floating Mute Bubble -->
-              <div onclick="toggleVoiceMute()" id="hud-mute-bubble" class="w-13 h-13 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-500 backdrop-blur border-2 border-white/30 shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-transform active:scale-95">
+              <!-- Apple-style Translucent Floating Mic Disc -->
+              <div onclick="toggleVoiceMute()" id="hud-mute-bubble" class="w-13 h-13 w-12 h-12 rounded-full apple-glass hover:bg-white/[0.18] active:scale-90 shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-all">
                 <svg id="hud-mic-icon" class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
-                <span id="hud-mic-label" class="text-[8px] font-bold text-white uppercase tracking-wider">Mute</span>
+                <span id="hud-mic-label" class="text-[8px] font-semibold text-white/90 uppercase tracking-wider">Mute</span>
               </div>
             </div>
 
             <!-- Return to Call Button -->
-            <div class="absolute bottom-4 inset-x-4 z-20">
-              <button onclick="goBack()" class="w-full py-2 bg-neutral-900/90 hover:bg-neutral-800 text-white rounded-xl text-xs font-semibold border border-neutral-700 backdrop-blur shadow-2xl transition-all">
-                Return to GameVoice Call
+            <div class="absolute bottom-5 inset-x-5 z-20">
+              <button onclick="goBack()" class="w-full py-3 apple-glass hover:bg-white/[0.15] active:scale-[0.99] text-white rounded-2xl text-xs font-semibold tracking-tight shadow-2xl transition-all">
+                Return to Call Screen
               </button>
             </div>
           </div>
 
-          <!-- Android System 3-Button Navigation Bar (Functional Back, Home, Recents) -->
-          <div class="h-8 bg-[#0a0b0e] border-t border-neutral-800/80 px-8 flex items-center justify-between shrink-0 select-none">
-            <!-- Back Button -->
-            <button onclick="goBack()" title="System Back" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-            </button>
-            <!-- Home Button -->
-            <button onclick="navigateTo('channels')" title="Home / Server Hub" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
-              <div class="w-3.5 h-3.5 rounded-full border-2 border-neutral-400 hover:border-white"></div>
-            </button>
-            <!-- Recents / Overlay Switcher -->
-            <button onclick="navigateTo('overlay')" title="Recent Apps / Game Overlay" class="p-1 text-neutral-400 hover:text-white active:scale-90 transition-transform">
-              <div class="w-3.5 h-3.5 rounded-sm border-2 border-neutral-400 hover:border-white"></div>
-            </button>
+          <!-- Apple Home Indicator Bar (Notchless & Minimalist Bottom) -->
+          <div class="h-6 flex items-center justify-center pb-1 shrink-0 bg-transparent">
+            <div onclick="navigateTo('channels')" class="w-32 h-1 bg-white/30 hover:bg-white/60 transition-colors rounded-full cursor-pointer" title="Swipe Up / Home"></div>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- Simulator Interactive Controls & Feature Inspector (Col 7) -->
-    <div class="lg:col-span-7 space-y-5">
-      <!-- Live State Simulator Panel -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 shadow-sm space-y-3">
-        <div class="flex items-center justify-between border-b border-neutral-800 pb-2.5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-            <span>🎮</span> Live Mobile State Simulator
+    <!-- Right Side: Component Architecture & Apple Design Language (7 cols) -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Interactive Controls Card -->
+      <div class="apple-glass rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+            <span>⚡</span> Interactive State Simulator
           </h3>
-          <span class="text-[11px] text-neutral-400">Click actions below to trigger phone UI reactions</span>
+          <span class="text-[11px] text-neutral-400">Tap below to test instant animations</span>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <button onclick="toggleSpeakerSimulation()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
-            <div class="text-xs font-semibold text-white">Voice Activity</div>
-            <div class="text-[10px] text-neutral-400 mt-0.5">Toggle speaker talking pulse</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <button onclick="toggleSpeakerSimulation()" class="p-3 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/[0.08] text-left transition-all">
+            <div class="text-xs font-semibold text-white">Voice Detection</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Toggle speaker aura</div>
           </button>
-          <button onclick="toggleReconnectSimulation()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
-            <div class="text-xs font-semibold text-white">Network Switch</div>
-            <div class="text-[10px] text-neutral-400 mt-0.5">Simulate Wi-Fi ↔ LTE handoff</div>
+          <button onclick="toggleReconnectSimulation()" class="p-3 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/[0.08] text-left transition-all">
+            <div class="text-xs font-semibold text-white">Wi-Fi Handoff</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Simulate reconnect banner</div>
           </button>
-          <button onclick="simulateIncomingChat()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
+          <button onclick="simulateIncomingChat()" class="p-3 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/[0.08] text-left transition-all">
             <div class="text-xs font-semibold text-white">Incoming Msg</div>
-            <div class="text-[10px] text-neutral-400 mt-0.5">Simulate realtime push stream</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">Push message stream</div>
           </button>
-          <button onclick="cycleAudioRoute()" class="p-2.5 bg-[#14161f] border border-neutral-700 rounded-xl text-left hover:border-indigo-500 transition-colors">
-            <div class="text-xs font-semibold text-white">Audio Output</div>
-            <div class="text-[10px] text-neutral-400 mt-0.5">BT → Speaker → Earpiece</div>
+          <button onclick="cycleAudioRoute()" class="p-3 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/[0.08] text-left transition-all">
+            <div class="text-xs font-semibold text-white">AirPlay / Route</div>
+            <div class="text-[10px] text-neutral-400 mt-0.5">AirPods ↔ Speaker</div>
           </button>
         </div>
       </div>
 
       <!-- Feature Architecture Callout -->
-      <div id="screen-info-card" class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+      <div id="screen-info-card" class="apple-glass rounded-3xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
           <div>
-            <span class="text-xs font-bold text-indigo-400 font-mono uppercase" id="feature-id">FEATURE: TEXT CHAT</span>
-            <h2 class="text-base font-bold text-white mt-0.5" id="feature-title">Local Cache & Reconnection Resumption</h2>
+            <span class="text-xs font-medium text-[#007AFF] uppercase tracking-wider" id="feature-id">FEATURE: TEXT CHAT</span>
+            <h2 class="text-lg font-semibold text-white tracking-tight mt-0.5" id="feature-title">Local Cache & Reconnection Resumption</h2>
           </div>
-          <span class="text-xs font-mono px-2 py-1 bg-neutral-800 text-indigo-300 rounded-lg" id="feature-compose">@Composable ChatScreen</span>
+          <span class="text-xs font-mono px-2.5 py-1 bg-white/[0.08] text-neutral-200 rounded-lg" id="feature-compose">@Composable ChatScreen</span>
         </div>
 
         <div class="text-xs text-neutral-300 space-y-2 leading-relaxed" id="feature-desc">
-          <p><strong>Mobile Problem:</strong> Opening a chat app while waiting for a game match shouldn't show a blank loading spinner. Network dropped during subway commutes or Wi-Fi handoffs shouldn't lose messages.</p>
-          <p><strong>Architecture Solution:</strong> The Android client queries the local SQLite/Room database instantly on cold launch. Concurrently, the client sends a <code class="text-indigo-300 bg-neutral-800 px-1 py-0.5 rounded font-mono">SyncMessages(last_message_id)</code> request to retrieve any messages sent while offline or disconnected.</p>
+          <p><strong>Elegance & Responsiveness:</strong> Instant sub-second launch with local disk cache. Smooth iMessage style bubbles with native fluid spring physics.</p>
+          <p><strong>Reconnection Protocol:</strong> In transit between Wi-Fi and 5G cellular, the app silently queries <code class="px-1 py-0.5 rounded bg-white/[0.08] font-mono text-white">SyncMessages(last_message_id)</code> to catch up without freezing the UI.</p>
         </div>
 
-        <!-- Jetpack Compose Implementation Notes -->
-        <div class="p-3 bg-[#13141c] border border-neutral-800 rounded-xl space-y-2">
+        <div class="p-3.5 rounded-2xl bg-[#1c1c1e] border border-white/[0.08] space-y-2">
           <div class="text-xs font-semibold text-white flex items-center gap-1.5">
-            <span class="text-indigo-400 font-mono">{ }</span> Key Compose & Android Components:
+            <span class="text-[#007AFF] font-mono">{ }</span> Compose & Mobile Architecture:
           </div>
           <ul class="text-xs text-neutral-400 space-y-1 list-disc pl-4" id="feature-checklist">
-            <li><code class="text-neutral-200 font-mono">LazyColumn(reverseLayout = true)</code> for smooth inverted chat history scrolling</li>
-            <li><code class="text-neutral-200 font-mono">Room Database + Paging 3</code> for instantaneous offline reads</li>
-            <li>WebSocket client with exponential backoff & auto-resume token</li>
+            <li><code class="text-neutral-200 font-mono">LazyColumn(reverseLayout = true)</code> with soft spring deceleration</li>
+            <li><code class="text-neutral-200 font-mono">Room DB Paging 3</code> for instantaneous zero-latency launch</li>
+            <li>WebSocket auto-resumption on network transitions</li>
           </ul>
         </div>
       </div>
+
     </div>
   </main>
 
-
   <!-- ======================================================== -->
-  <!-- VIEW 2: COMPONENT BREAKDOWN (Jetpack Compose Spec)       -->
+  <!-- VIEW 2: COMPONENT BREAKDOWN (Apple Human Interface)     -->
   <!-- ======================================================== -->
-  <section id="view-components" class="hidden max-w-7xl mx-auto space-y-6">
-    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
-      <h2 class="text-base font-bold text-white">Jetpack Compose Component Hierarchy</h2>
-      <p class="text-xs text-neutral-400 mt-1">Modular component breakdown mapped to Android architecture and Go protobuf contracts.</p>
+  <section id="view-components" class="hidden max-w-6xl mx-auto space-y-6">
+    <div class="apple-glass rounded-3xl p-6">
+      <h2 class="text-lg font-semibold text-white tracking-tight">Component Hierarchy & Apple Design Specs</h2>
+      <p class="text-xs text-neutral-400 mt-1">Modular Jetpack Compose components styled with Apple Human Interface elegance.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       
-      <!-- Component 1: VoiceChannelTile -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+      <!-- Component 1: VoiceChannelRow -->
+      <div class="apple-glass rounded-3xl p-5 space-y-3.5">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-emerald-400 font-mono">ChannelList</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+          <span class="text-xs font-semibold text-emerald-400">Channels</span>
+          <span class="text-[10px] px-2 py-0.5 bg-white/[0.08] text-neutral-300 rounded-full font-mono">Composable</span>
         </div>
-        <h3 class="text-sm font-bold text-white">VoiceChannelTile</h3>
-        <p class="text-xs text-neutral-400">Renders voice channel in the group drawer, displaying active count and pulsing green dot for real-time speakers without joining.</p>
+        <h3 class="text-sm font-semibold text-white">VoiceChannelRow</h3>
+        <p class="text-xs text-neutral-400 leading-relaxed">Apple Inset Grouped row showing active participants and live speaking aura before joining.</p>
         
-        <!-- Live Mini Component Preview -->
-        <div class="p-3 bg-[#14161f] border border-indigo-500/30 rounded-xl">
+        <div class="p-3 rounded-2xl bg-[#1c1c1e] border border-white/[0.08]">
           <div class="flex items-center justify-between text-xs">
-            <span class="text-white font-semibold flex items-center gap-1.5"><span>🔊</span> Ranked Room A</span>
-            <span class="text-[10px] text-emerald-400 bg-emerald-500/20 px-1.5 py-0.5 rounded font-mono">3 Active</span>
+            <span class="text-white font-medium flex items-center gap-2"><span>🔊</span> Ranked Lobby A</span>
+            <span class="text-[10px] text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full font-semibold">3 in call</span>
           </div>
-          <div class="mt-2 text-[11px] text-emerald-300 flex items-center gap-1.5">
+          <div class="mt-2 text-[11px] text-emerald-400 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>ShadowGamer (speaking)</span>
+            <span>ShadowGamer speaking</span>
           </div>
-        </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>@Composable fun VoiceChannelTile(<br>
-          &nbsp;&nbsp;channel: VoiceChannel,<br>
-          &nbsp;&nbsp;activeSpeakers: List&lt;User&gt;,<br>
-          &nbsp;&nbsp;onJoinClick: () -> Unit<br>
-          )</code>
         </div>
       </div>
 
       <!-- Component 2: SpeakerTile -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+      <div class="apple-glass rounded-3xl p-5 space-y-3.5">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-indigo-400 font-mono">VoiceCall</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
+          <span class="text-xs font-semibold text-[#007AFF]">VoiceRoom</span>
+          <span class="text-[10px] px-2 py-0.5 bg-white/[0.08] text-neutral-300 rounded-full font-mono">Composable</span>
         </div>
-        <h3 class="text-sm font-bold text-white">SpeakerGridTile</h3>
-        <p class="text-xs text-neutral-400">Card tile in the voice room grid showing participant avatar, handle, audio volume wave, and dynamic speaking glow ring.</p>
+        <h3 class="text-sm font-semibold text-white">SpeakerCardTile</h3>
+        <p class="text-xs text-neutral-400 leading-relaxed">FaceTime-inspired squircle card with frosted glass background and emerald breathing pulse.</p>
         
-        <!-- Live Mini Component Preview -->
-        <div class="p-3 bg-[#14161f] border-2 border-emerald-500 rounded-xl flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-400 flex items-center justify-center text-lg">🐺</div>
+        <div class="p-3 rounded-2xl apple-glass-card border border-emerald-500/40 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-lg shadow-sm">🐺</div>
           <div>
-            <div class="text-xs font-bold text-white">ShadowGamer</div>
-            <div class="text-[10px] text-emerald-400 font-medium">Speaking (VAD active)</div>
+            <div class="text-xs font-semibold text-white">ShadowGamer</div>
+            <div class="text-[10px] text-emerald-400 font-medium">Speaking (VAD Active)</div>
           </div>
-        </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>@Composable fun SpeakerGridTile(<br>
-          &nbsp;&nbsp;participant: ParticipantState,<br>
-          &nbsp;&nbsp;isSpeaking: Boolean,<br>
-          &nbsp;&nbsp;isMuted: Boolean<br>
-          )</code>
         </div>
       </div>
 
-      <!-- Component 3: FloatingMuteHUD -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
+      <!-- Component 3: Live Activity Overlay -->
+      <div class="apple-glass rounded-3xl p-5 space-y-3.5">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-amber-400 font-mono">Overlay</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Android Service</span>
+          <span class="text-xs font-semibold text-purple-400">Overlay</span>
+          <span class="text-[10px] px-2 py-0.5 bg-white/[0.08] text-neutral-300 rounded-full font-mono">Service View</span>
         </div>
-        <h3 class="text-sm font-bold text-white">FloatingOverlayHUD</h3>
-        <p class="text-xs text-neutral-400">Android <code class="text-neutral-300 font-mono">SYSTEM_ALERT_WINDOW</code> floating view. Stays on top of games with one-tap mic mute and active speaker pill.</p>
+        <h3 class="text-sm font-semibold text-white">LiveActivityHUD</h3>
+        <p class="text-xs text-neutral-400 leading-relaxed">Translucent floating pill that hovers unobtrusively over gaming screens with one-touch mute.</p>
         
-        <!-- Live Mini Component Preview -->
-        <div class="p-3 bg-[#14161f] border border-neutral-700 rounded-xl flex items-center justify-between">
+        <div class="p-3 rounded-2xl apple-glass-pill flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span class="text-xs text-white font-medium">ShadowGamer</span>
           </div>
-          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+          <div class="w-7 h-7 rounded-full bg-white/[0.15] flex items-center justify-center text-[10px] font-bold text-white">
             M
           </div>
         </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>class FloatingOverlayService : Service() {<br>
-          &nbsp;&nbsp;// WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY<br>
-          &nbsp;&nbsp;fun updateSpeaker(user: String)<br>
-          &nbsp;&nbsp;fun toggleMute()<br>
-          }</code>
-        </div>
-      </div>
-
-      <!-- Component 4: MessageBubble -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-cyan-400 font-mono">Chat</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
-        </div>
-        <h3 class="text-sm font-bold text-white">MessageBubble</h3>
-        <p class="text-xs text-neutral-400">Renders incoming and outgoing chat messages with cached status, sender handle, timestamp, and avatar.</p>
-        
-        <!-- Live Mini Component Preview -->
-        <div class="p-3 bg-[#14161f] border border-neutral-800 rounded-xl space-y-1">
-          <div class="flex items-center gap-1.5 text-xs">
-            <span class="font-bold text-cyan-400">Krypton</span>
-            <span class="text-[10px] text-neutral-500">20:41</span>
-          </div>
-          <div class="text-xs text-neutral-200 bg-neutral-800/60 p-2 rounded-lg">
-            Setting perimeter fences now.
-          </div>
-        </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>@Composable fun MessageBubble(<br>
-          &nbsp;&nbsp;message: ChatMessage,<br>
-          &nbsp;&nbsp;isSelf: Boolean<br>
-          )</code>
-        </div>
-      </div>
-
-      <!-- Component 5: VoiceControlsBar -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-rose-400 font-mono">VoiceCall</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
-        </div>
-        <h3 class="text-sm font-bold text-white">VoiceControlsBar</h3>
-        <p class="text-xs text-neutral-400">Bottom action bar featuring large ergonomic targets for Mute, Deafen, Audio Route (BT/Speaker), and Call Disconnect.</p>
-        
-        <!-- Live Mini Component Preview -->
-        <div class="p-2.5 bg-[#14161f] border border-neutral-800 rounded-xl flex items-center justify-around">
-          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs">🎤</span>
-          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs">🔇</span>
-          <span class="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs text-cyan-400">🎧</span>
-          <span class="w-8 h-8 rounded-lg bg-rose-600 flex items-center justify-center text-xs text-white">✕</span>
-        </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>@Composable fun VoiceControlsBar(<br>
-          &nbsp;&nbsp;isMuted: Boolean, onMuteToggle: () -> Unit,<br>
-          &nbsp;&nbsp;audioDevice: AudioDevice, onDeviceChange: () -> Unit,<br>
-          &nbsp;&nbsp;onDisconnect: () -> Unit<br>
-          )</code>
-        </div>
-      </div>
-
-      <!-- Component 6: ServerRail -->
-      <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-purple-400 font-mono">Navigation</span>
-          <span class="text-[10px] px-2 py-0.5 bg-neutral-800 text-neutral-300 rounded font-mono">Composable</span>
-        </div>
-        <h3 class="text-sm font-bold text-white">ServerNavigationRail</h3>
-        <p class="text-xs text-neutral-400">Left-side vertical server strip with rounded icon badges, active selection pills, and new server join trigger.</p>
-        
-        <!-- Live Mini Component Preview -->
-        <div class="p-2.5 bg-[#14161f] border border-neutral-800 rounded-xl flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">APX</div>
-          <div class="w-8 h-8 rounded-xl bg-neutral-800 text-neutral-300 text-xs flex items-center justify-center">PUB</div>
-          <div class="w-8 h-8 rounded-xl border border-dashed border-neutral-700 text-neutral-500 text-xs flex items-center justify-center">+</div>
-        </div>
-
-        <div class="text-[11px] font-mono bg-black/40 p-2.5 rounded-lg text-neutral-300 overflow-x-auto">
-          <code>@Composable fun ServerNavigationRail(<br>
-          &nbsp;&nbsp;groups: List&lt;Group&gt;,<br>
-          &nbsp;&nbsp;selectedGroupId: String,<br>
-          &nbsp;&nbsp;onGroupSelected: (String) -> Unit<br>
-          )</code>
-        </div>
       </div>
 
     </div>
   </section>
 
-
   <!-- ======================================================== -->
-  <!-- VIEW 3: DESIGN TOKENS (Color & Typography Spec)          -->
+  <!-- VIEW 3: DESIGN TOKENS (Apple Dark Mode Palette)          -->
   <!-- ======================================================== -->
-  <section id="view-tokens" class="hidden max-w-7xl mx-auto space-y-6">
-    <div class="bg-neutral-900 border border-neutral-800 rounded-2xl p-5">
-      <h2 class="text-base font-bold text-white">Mobile Gaming Design Tokens</h2>
-      <p class="text-xs text-neutral-400 mt-1">Palette and typography optimized for AMOLED displays, zero glare, and clear in-game legibility.</p>
+  <section id="view-tokens" class="hidden max-w-6xl mx-auto space-y-6">
+    <div class="apple-glass rounded-3xl p-6">
+      <h2 class="text-lg font-semibold text-white tracking-tight">Apple Human Interface Palette</h2>
+      <p class="text-xs text-neutral-400 mt-1">High-contrast, pure black AMOLED dark surfaces with semantic system accents.</p>
     </div>
 
-    <!-- Color Palette Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
-        <div class="h-14 rounded-xl bg-[#0b0c10] border border-neutral-800"></div>
-        <div class="text-xs font-bold text-white">Background Root</div>
-        <div class="text-[10px] text-neutral-400 font-mono">#0B0C10 (AMOLED Pure)</div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="p-4 apple-glass rounded-3xl space-y-2">
+        <div class="h-14 rounded-2xl bg-[#000000] border border-white/10"></div>
+        <div class="text-xs font-semibold text-white">System Black</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#000000 (AMOLED Depth)</div>
       </div>
 
-      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
-        <div class="h-14 rounded-xl bg-[#12131a] border border-neutral-800"></div>
-        <div class="text-xs font-bold text-white">Surface Secondary</div>
-        <div class="text-[10px] text-neutral-400 font-mono">#12131A (Channel List)</div>
+      <div class="p-4 apple-glass rounded-3xl space-y-2">
+        <div class="h-14 rounded-2xl bg-[#1c1c1e] border border-white/10"></div>
+        <div class="text-xs font-semibold text-white">Secondary Fill</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#1C1C1E (Inset Cards)</div>
       </div>
 
-      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
-        <div class="h-14 rounded-xl bg-indigo-600"></div>
-        <div class="text-xs font-bold text-white">Accent Brand</div>
-        <div class="text-[10px] text-neutral-400 font-mono">#4F46E5 (Primary Buttons)</div>
+      <div class="p-4 apple-glass rounded-3xl space-y-2">
+        <div class="h-14 rounded-2xl bg-[#007AFF]"></div>
+        <div class="text-xs font-semibold text-white">System Blue</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#007AFF (Primary Tint)</div>
       </div>
 
-      <div class="p-4 bg-neutral-900 border border-neutral-800 rounded-2xl space-y-2">
-        <div class="h-14 rounded-xl bg-emerald-500"></div>
-        <div class="text-xs font-bold text-white">Voice Speaking</div>
-        <div class="text-[10px] text-neutral-400 font-mono">#10B981 (Active VAD Pulse)</div>
+      <div class="p-4 apple-glass rounded-3xl space-y-2">
+        <div class="h-14 rounded-2xl bg-[#34C759]"></div>
+        <div class="text-xs font-semibold text-white">System Green</div>
+        <div class="text-[10px] text-neutral-400 font-mono">#34C759 (Active Voice)</div>
       </div>
     </div>
   </section>
 
-
-  <!-- JavaScript State Controller -->
+  <!-- State & Navigation Script -->
   <script>
-    // State
     const state = {
       currentScreen: 'chat',
       isMuted: false,
       isDeafened: false,
       isSpeaking: true,
       audioRouteIdx: 0,
-      routes: ['Bluetooth Out', 'Speaker Out', 'Earpiece Out'],
+      routes: ['AirPods Pro', 'Speakerphone', 'iPhone Receiver'],
       isReconnecting: false
     };
+
+    let navHistory = [];
 
     const screenData = {
       auth: {
         featureId: "FEATURE: ACCOUNTS & ONBOARDING",
         title: "Frictionless Gamer Authentication",
         compose: "@Composable AuthScreen",
-        desc: "<p><strong>UX Philosophy:</strong> Gamers drop off when forced into email verification loops while their squad waits. The MVP provides instant entry with handle + avatar.</p>",
+        desc: "<p><strong>Apple Minimalism:</strong> Clean Inset Grouped form styling. No email loops or verification roadblocks — gamers enter directly.</p>",
         checklist: [
-          "JWT session storage in EncryptedSharedPreferences",
+          "Secure JWT session stored in EncryptedSharedPreferences",
           "One-tap starter avatar selection (🎮, 🐺, ⚡, 🎯)",
-          "Zero verification latency: straight to squad channel list"
+          "Sub-10 second onboarding straight to squad channels"
         ]
       },
       channels: {
         featureId: "FEATURE: GROUPS & CHANNELS",
-        title: "Server Navigation & Live Voice Badges",
+        title: "Group Hub & Live Voice Indicators",
         compose: "@Composable ChannelListScreen",
-        desc: "<p><strong>UX Philosophy:</strong> Players want to know if someone is already talking before joining a voice channel. Real-time participant counters and speaker pulses render directly in the drawer.</p>",
+        desc: "<p><strong>Apple Ergonomics:</strong> Inset Grouped cards separating Voice Channels from Text Channels. Live speaker indicators show active conversation before joining.</p>",
         checklist: [
-          "Vertical navigation rail for servers and group join codes",
-          "Voice channel cards with live attendee counts",
-          "Persistent user bottom dock with quick mic toggle"
+          "Grouped card insets with hairline borders",
+          "Live participant badging and talking waveforms",
+          "Apple-style user status dock with haptic mute"
         ]
       },
       chat: {
         featureId: "FEATURE: TEXT CHAT",
         title: "Local Cache & Reconnection Resumption",
         compose: "@Composable ChatScreen",
-        desc: "<p><strong>Mobile Problem:</strong> Opening a chat app while waiting for a game match shouldn't show a blank loading spinner. Network dropped during subway commutes or Wi-Fi handoffs shouldn't lose messages.</p><p><strong>Architecture Solution:</strong> The Android client queries the local SQLite/Room database instantly on cold launch. Concurrently, the client sends a <code class='text-indigo-300 bg-neutral-800 px-1 py-0.5 rounded font-mono'>SyncMessages(last_message_id)</code> request to retrieve any messages sent while offline or disconnected.</p>",
+        desc: "<p><strong>Elegance & Responsiveness:</strong> Instant sub-second launch with local disk cache. Smooth iMessage style bubbles with native fluid spring physics.</p><p><strong>Reconnection Protocol:</strong> In transit between Wi-Fi and 5G cellular, the app silently queries <code class='px-1 py-0.5 rounded bg-white/[0.08] font-mono text-white'>SyncMessages(last_message_id)</code> to catch up without freezing the UI.</p>",
         checklist: [
-          "LazyColumn(reverseLayout = true) for smooth inverted chat history scrolling",
-          "Room Database + Paging 3 for instantaneous offline reads",
-          "WebSocket client with exponential backoff & auto-resume token"
+          "LazyColumn(reverseLayout = true) with soft spring deceleration",
+          "Room DB Paging 3 for instantaneous zero-latency launch",
+          "WebSocket auto-resumption on network transitions"
         ]
       },
       voice: {
         featureId: "FEATURE: LIVEKIT WEBRTC CALL",
         title: "Foreground Call Engine & Audio Focus",
         compose: "@Composable VoiceRoomScreen",
-        desc: "<p><strong>Android In-Game Differentiator:</strong> Heavy 3D games take foreground resources. Our Foreground Service with persistent microphone notification prevents the OS from killing WebRTC sessions mid-game.</p>",
+        desc: "<p><strong>FaceTime Studio Aesthetics:</strong> Squircle participant cards with emerald breathing pulses. Bottom action bar with large circular frosted buttons.</p>",
         checklist: [
-          "Opus codec at 24kbps with DTX (Discontinuous Transmission for silence suppression)",
-          "AudioManager non-exclusive voice communication audio mode",
-          "Dynamic visual speaker ring highlighting the active talker in real time"
+          "Opus codec at 24kbps with DTX (Discontinuous Transmission)",
+          "Non-exclusive AudioManager focus for concurrent game playback",
+          "AirPlay / Bluetooth peripheral routing selector"
         ]
       },
       overlay: {
         featureId: "FEATURE: IN-GAME OVERLAY",
-        title: "SYSTEM_ALERT_WINDOW Floating HUD",
+        title: "Apple Live Activity Floating HUD",
         compose: "FloatingOverlayService.kt",
-        desc: "<p><strong>UX Philosophy:</strong> Never make players alt-tab out of an active firefight to mute their microphone or check who is yelling callouts.</p>",
+        desc: "<p><strong>Live Activity Philosophy:</strong> Floating translucent disc and waveform pill anchored to screen edges. One-tap instant mic mute directly above active 3D games.</p>",
         checklist: [
-          "Compact draggable floating pill anchored to screen edges",
-          "One-tap instant mic toggle floating above active game renderers",
-          "Active speaker toast showing teammate's gamer handle"
+          "Draggable frosted pill with edge-docking magnets",
+          "One-tap mic toggle floating above active game renderers",
+          "Foreground service persistent microphone notification"
         ]
       }
     };
 
-    // Navigation History Stack
-    let navHistory = [];
-
     function navigateTo(screenName, isBack = false) {
       if (state.currentScreen === screenName) return;
-      
-      // Push previous screen to history stack if not navigating back
       if (!isBack && state.currentScreen) {
         navHistory.push(state.currentScreen);
       }
       state.currentScreen = screenName;
       
-      // Toggle phone screen divs
       document.querySelectorAll('.screen-panel').forEach(p => p.classList.add('hidden'));
       const target = document.getElementById('screen-' + screenName);
       if (target) target.classList.remove('hidden');
 
-      // Update Nav buttons
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-lg text-neutral-400 hover:text-white transition-colors";
+        btn.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-xl text-neutral-400 hover:text-white transition-all";
       });
       const activeNav = document.getElementById('nav-' + screenName);
       if (activeNav) {
-        activeNav.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-600 text-white transition-colors";
+        activeNav.className = "nav-btn px-2.5 py-1 text-xs font-medium rounded-xl bg-white/15 text-white shadow-sm transition-all";
       }
 
-      // Update feature info card
       const info = screenData[screenName];
       if (info) {
         document.getElementById('feature-id').innerText = info.featureId;
@@ -868,7 +788,6 @@
         const prev = navHistory.pop();
         navigateTo(prev, true);
       } else {
-        // Context-aware sensible fallbacks if history is empty
         if (state.currentScreen === 'chat' || state.currentScreen === 'voice') {
           navigateTo('channels', true);
         } else if (state.currentScreen === 'channels') {
@@ -882,7 +801,6 @@
     }
 
     function leaveCall() {
-      // Disconnecting returns user directly to the group channels hub
       navigateTo('channels');
     }
 
@@ -891,19 +809,19 @@
       document.getElementById('view-components').classList.add('hidden');
       document.getElementById('view-tokens').classList.add('hidden');
 
-      document.getElementById('btn-mode-sim').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
-      document.getElementById('btn-mode-comp').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
-      document.getElementById('btn-mode-tokens').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg text-neutral-400 hover:text-white transition-all";
+      document.getElementById('btn-mode-sim').className = "px-4 py-1.5 text-xs font-medium rounded-full text-neutral-400 hover:text-white transition-all duration-200";
+      document.getElementById('btn-mode-comp').className = "px-4 py-1.5 text-xs font-medium rounded-full text-neutral-400 hover:text-white transition-all duration-200";
+      document.getElementById('btn-mode-tokens').className = "px-4 py-1.5 text-xs font-medium rounded-full text-neutral-400 hover:text-white transition-all duration-200";
 
       if (mode === 'simulator') {
         document.getElementById('view-simulator').classList.remove('hidden');
-        document.getElementById('btn-mode-sim').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+        document.getElementById('btn-mode-sim').className = "px-4 py-1.5 text-xs font-medium rounded-full bg-[#3a3a3c] text-white shadow-sm transition-all duration-200";
       } else if (mode === 'components') {
         document.getElementById('view-components').classList.remove('hidden');
-        document.getElementById('btn-mode-comp').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+        document.getElementById('btn-mode-comp').className = "px-4 py-1.5 text-xs font-medium rounded-full bg-[#3a3a3c] text-white shadow-sm transition-all duration-200";
       } else if (mode === 'tokens') {
         document.getElementById('view-tokens').classList.remove('hidden');
-        document.getElementById('btn-mode-tokens').className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white shadow-sm transition-all";
+        document.getElementById('btn-mode-tokens').className = "px-4 py-1.5 text-xs font-medium rounded-full bg-[#3a3a3c] text-white shadow-sm transition-all duration-200";
       }
     }
 
@@ -915,22 +833,16 @@
       const hudLabel = document.getElementById('hud-mic-label');
 
       if (state.isMuted) {
-        muteBtn.classList.replace('bg-neutral-800', 'bg-rose-600');
-        muteBtn.classList.replace('border-neutral-700', 'border-rose-500');
+        muteBtn.classList.replace('bg-white/[0.1]', 'bg-[#FF3B30]');
         muteLabel.innerText = "Muted";
-        hudBubble.classList.replace('bg-indigo-600', 'bg-rose-600');
+        hudBubble.classList.replace('apple-glass', 'bg-[#FF3B30]');
         hudLabel.innerText = "Muted";
       } else {
-        muteBtn.classList.replace('bg-rose-600', 'bg-neutral-800');
-        muteBtn.classList.replace('border-rose-500', 'border-neutral-700');
+        muteBtn.classList.replace('bg-[#FF3B30]', 'bg-white/[0.1]');
         muteLabel.innerText = "Mute";
-        hudBubble.classList.replace('bg-rose-600', 'bg-indigo-600');
+        hudBubble.classList.replace('bg-[#FF3B30]', 'apple-glass');
         hudLabel.innerText = "Mute";
       }
-    }
-
-    function toggleGlobalMute() {
-      toggleVoiceMute();
     }
 
     function toggleDeafen() {
@@ -938,10 +850,10 @@
       const deafBtn = document.getElementById('btn-voice-deafen');
       const deafLabel = document.getElementById('label-voice-deafen');
       if (state.isDeafened) {
-        deafBtn.classList.replace('bg-neutral-800', 'bg-amber-600');
+        deafBtn.classList.replace('bg-white/[0.1]', 'bg-[#FF9500]');
         deafLabel.innerText = "Deafened";
       } else {
-        deafBtn.classList.replace('bg-amber-600', 'bg-neutral-800');
+        deafBtn.classList.replace('bg-[#FF9500]', 'bg-white/[0.1]');
         deafLabel.innerText = "Deafen";
       }
     }
@@ -959,12 +871,12 @@
       const hudPill = document.getElementById('hud-speaker-pill');
 
       if (state.isSpeaking) {
-        tile.classList.add('speaking-glow', 'border-emerald-500');
-        tile.classList.remove('border-neutral-800');
+        tile.classList.add('speaking-aura', 'border-emerald-500/50');
+        tile.classList.remove('border-white/10');
         hudPill.classList.remove('hidden');
       } else {
-        tile.classList.remove('speaking-glow', 'border-emerald-500');
-        tile.classList.add('border-neutral-800');
+        tile.classList.remove('speaking-aura', 'border-emerald-500/50');
+        tile.classList.add('border-white/10');
         hudPill.classList.add('hidden');
       }
     }
@@ -976,12 +888,10 @@
 
       if (state.isReconnecting) {
         banner.classList.remove('hidden');
-        badge.innerText = "LTE -> WiFi";
-        badge.className = "text-[10px] px-1 rounded bg-amber-500/20 text-amber-400 font-mono";
+        badge.innerText = "Wi-Fi";
       } else {
         banner.classList.add('hidden');
         badge.innerText = "5G";
-        badge.className = "text-[10px] px-1 rounded bg-emerald-500/20 text-emerald-400 font-mono";
       }
     }
 
@@ -993,15 +903,12 @@
 
       const container = document.getElementById('chat-messages-container');
       const msgDiv = document.createElement('div');
-      msgDiv.className = "flex items-start gap-2 flex-row-reverse animate-fade-in";
+      msgDiv.className = "flex items-end gap-2 max-w-[85%] ml-auto flex-row-reverse animate-fade-in";
       msgDiv.innerHTML = `
-        <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs shrink-0">🎮</div>
-        <div class="flex-1 text-right">
-          <div class="flex items-baseline gap-1.5 justify-end">
-            <span class="text-[10px] text-neutral-500">Just now</span>
-            <span class="text-xs font-bold text-indigo-400">You</span>
-          </div>
-          <div class="text-xs text-white mt-0.5 bg-indigo-600 p-2 rounded-xl rounded-tr-none inline-block text-left shadow-sm">
+        <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-xs text-white shrink-0 mb-0.5">🎮</div>
+        <div class="text-right">
+          <div class="text-[10px] font-medium text-neutral-400 mb-0.5 mr-1">You</div>
+          <div class="bg-[#007AFF] text-white text-xs px-3.5 py-2.5 rounded-2xl rounded-br-sm font-normal leading-relaxed shadow-sm">
             ${msg}
           </div>
         </div>
@@ -1014,16 +921,13 @@
     function simulateIncomingChat() {
       const container = document.getElementById('chat-messages-container');
       const msgDiv = document.createElement('div');
-      msgDiv.className = "flex items-start gap-2 animate-fade-in";
+      msgDiv.className = "flex items-end gap-2 max-w-[85%] animate-fade-in";
       msgDiv.innerHTML = `
-        <div class="w-7 h-7 rounded-lg bg-emerald-600/30 border border-emerald-500/40 flex items-center justify-center text-xs shrink-0">🐺</div>
-        <div class="flex-1">
-          <div class="flex items-baseline gap-1.5">
-            <span class="text-xs font-bold text-emerald-400">ShadowGamer</span>
-            <span class="text-[10px] text-neutral-500">Just now</span>
-          </div>
-          <div class="text-xs text-neutral-200 mt-0.5 bg-neutral-800/50 p-2 rounded-xl rounded-tl-none border border-neutral-800">
-            Enemy squad spotted pushing from the river!
+        <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0 mb-0.5">🐺</div>
+        <div>
+          <div class="text-[10px] font-medium text-neutral-400 mb-0.5 ml-1">ShadowGamer</div>
+          <div class="bg-[#2c2c2e] text-white text-xs px-3.5 py-2.5 rounded-2xl rounded-bl-sm font-normal leading-relaxed">
+            Squad coming down from North ridge, hold positions!
           </div>
         </div>
       `;
@@ -1034,15 +938,11 @@
       }
     }
 
-    function selectAvatar(btn, emoji) {
+    function selectAvatar(btn) {
       document.querySelectorAll('.avatar-opt').forEach(b => {
-        b.className = "avatar-opt w-9 h-9 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-sm";
+        b.className = "avatar-opt w-10 h-10 rounded-2xl bg-[#1c1c1e] border border-white/[0.08] flex items-center justify-center text-base";
       });
-      btn.className = "avatar-opt w-9 h-9 rounded-xl bg-indigo-600/30 border-2 border-indigo-500 flex items-center justify-center text-sm";
-    }
-
-    function selectServer(name) {
-      document.getElementById('server-title').innerText = name;
+      btn.className = "avatar-opt w-10 h-10 rounded-2xl bg-[#007AFF]/20 border border-[#007AFF] flex items-center justify-center text-base shadow-sm";
     }
   </script>
 </body>
